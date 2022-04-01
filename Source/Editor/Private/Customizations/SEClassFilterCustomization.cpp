@@ -70,7 +70,8 @@ void FSEClassFilterCustomization::CustomizeHeader(TSharedRef<class IPropertyHand
 				SNew(SScaleBox)
 				[
 					SNew(SImage)
-					.Image(FEditorStyle::GetBrush("PropertyWindow.Button_EmptyArray"))
+					// .Image(FEditorStyle::GetBrush("PropertyWindow.Button_EmptyArray"))
+					.Image(FEditorStyle::GetBrush("PropertyWindow.Button_Clear"))
 					.ColorAndOpacity(FSlateColor::UseForeground())
 				]
 			]

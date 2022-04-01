@@ -8,7 +8,7 @@
 #include <CoreGlobals.h>
 #include <Misc/MessageDialog.h>
 #include <PackageTools.h>
-#include <Toolkits/AssetEditorManager.h>
+#include "AssetEditorModeManager.h"
 #include <AssetRegistryModule.h>
 #include <EditorDirectories.h>
 #include <Dialogs/Dialogs.h>
