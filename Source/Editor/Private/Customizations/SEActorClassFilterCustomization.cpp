@@ -2,8 +2,8 @@
 
 #include "Customizations/SEActorClassFilterCustomization.h"
 
-#include <DetailWidgetRow.h>
-#include <Modules/ModuleManager.h>
+#include "DetailWidgetRow.h"
+#include "Modules/ModuleManager.h"
 
 #define LOCTEXT_NAMESPACE "FSEActorClassFilterCustomization"
 

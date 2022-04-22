@@ -1,10 +1,8 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "ClassFilterNode.h"
-#include <Engine/Blueprint.h>
-#include <PropertyHandle.h>
-
-#include "Misc/ClassFilter.h"
+#include "Engine/Blueprint.h"
+#include "Misc/SEClassFilter.h"
 
 
 FSEClassFilterNode::FSEClassFilterNode(const FString& InClassName, const FString& InClassDisplayName)

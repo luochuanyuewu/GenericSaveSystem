@@ -6,7 +6,7 @@
 
 #include "AssetTypeActions_Base.h"
 
-#include "SlotData.h"
+#include "SESlotData.h"
 
 #define LOCTEXT_NAMESPACE "SaveExtensionEditor"
 
@@ -22,7 +22,7 @@ public:
 	virtual FText GetName() const override;
 	virtual FColor GetTypeColor() const override;
 
-	virtual UClass* GetSupportedClass() const override { return USlotData::StaticClass(); }
+	virtual UClass* GetSupportedClass() const override { return USESlotData::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE

@@ -10,16 +10,16 @@
 #include "Widgets/SWindow.h"
 #include "Dialogs/Dialogs.h"
 #include "GameplayTagsModule.h"
-#include <ScopedTransaction.h>
-#include <Textures/SlateIcon.h>
-#include <PropertyHandle.h>
+#include "ScopedTransaction.h"
+#include "Textures/SlateIcon.h"
+#include "PropertyHandle.h"
 #include "AssetEditorModeManager.h"
-#include <AssetToolsModule.h>
-#include <Widgets/Input/SHyperlink.h>
-#include <Widgets/Input/SSearchBox.h>
-#include <Widgets/Layout/SScaleBox.h>
-#include <Widgets/Layout/SBorder.h>
-#include <Widgets/Notifications/SNotificationList.h>
+#include "AssetToolsModule.h"
+#include "Widgets/Input/SHyperlink.h"
+#include "Widgets/Input/SSearchBox.h"
+#include "Widgets/Layout/SScaleBox.h"
+#include "Widgets/Layout/SBorder.h"
+#include "Widgets/Notifications/SNotificationList.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "GameplayTagsSettings.h"
 #include "Layout/WidgetPath.h"
@@ -30,7 +30,7 @@
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 
 #include "ClassFilterHelpers.h"
-#include <ClassViewerProjectSettings.h>
+#include "ClassViewerProjectSettings.h"
 
 #define LOCTEXT_NAMESPACE "GameplayTagWidget"
 

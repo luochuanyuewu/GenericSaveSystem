@@ -2,7 +2,7 @@
 
 #include "Automatron.h"
 #include "Helpers/TestGameInstance.h"
-#include "SaveManager.h"
+#include "SESaveManager.h"
 
 
 class FSaveSpec_GameInstance : public Automatron::FTestSpec
@@ -10,8 +10,8 @@ class FSaveSpec_GameInstance : public Automatron::FTestSpec
 	GENERATE_SPEC(FSaveSpec_GameInstance, "SaveExtension",
 		EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter);
 
-	USaveManager* SaveManager = nullptr;
-	USavePreset* TestPreset = nullptr;
+	USESaveManager* SaveManager = nullptr;
+	USESavePreset* TestPreset = nullptr;
 
 	// Helper for some test delegates
 	bool bFinishTick = false;
@@ -29,12 +29,12 @@ class FSaveSpec_GameInstance : public Automatron::FTestSpec
 void FSaveSpec_GameInstance::Define()
 {
 	BeforeEach([this]() {
-		SaveManager = USaveManager::Get(GetMainWorld());
+		SaveManager = USESaveManager::Get(GetMainWorld());
 		TestNotNull(TEXT("SaveManager"), SaveManager);
 
 		SaveManager->bTickWithGameWorld = true;
 
-		TestPreset = SaveManager->SetActivePreset(USavePreset::StaticClass());
+		TestPreset = SaveManager->SetActivePreset(USESavePreset::StaticClass());
 		TestPreset->bStoreGameInstance = true;
 
 		TestPreset->MultithreadedFiles = ESaveASyncMode::OnlySync;

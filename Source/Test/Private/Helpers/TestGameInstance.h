@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <CoreMinimal.h>
-#include <Engine/GameInstance.h>
+#include "CoreMinimal.h"
+#include "Engine/GameInstance.h"
 #include "TestGameInstance.generated.h"
 
 UCLASS()

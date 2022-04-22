@@ -7,11 +7,11 @@
 USavePresetFactory::USavePresetFactory() : Super() {
 	bCreateNew = true;
 	bEditAfterNew = true;
-	SupportedClass = USavePreset::StaticClass();
+	SupportedClass = USESavePreset::StaticClass();
 }
 
 UObject* USavePresetFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) {
-	check(Class->IsChildOf(USavePreset::StaticClass()));
+	check(Class->IsChildOf(USESavePreset::StaticClass()));
 
 	if (!FKismetEditorUtilities::CanCreateBlueprintOfClass(Class))
 	{

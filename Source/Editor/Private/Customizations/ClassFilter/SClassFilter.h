@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include <Engine/EngineTypes.h>
+#include "Engine/EngineTypes.h"
 #include "SlateFwd.h"
 #include "UObject/Object.h"
 #include "Layout/Visibility.h"
@@ -14,7 +14,7 @@
 #include "Widgets/Views/STableRow.h"
 #include "Widgets/Views/STreeView.h"
 
-#include "Misc/ClassFilter.h"
+#include "Misc/SEClassFilter.h"
 #include "ClassFilterNode.h"
 
 class IPropertyHandle;

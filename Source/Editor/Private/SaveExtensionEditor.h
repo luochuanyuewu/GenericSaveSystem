@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <PropertyEditorModule.h>
-#include <Framework/Docking/LayoutExtender.h>
-#include <WorkflowOrientedApp/WorkflowTabManager.h>
-#include <BlueprintEditorModes.h>
-#include <BlueprintEditorModule.h>
-#include <BlueprintEditorTabs.h>
-#include <EdGraphUtilities.h>
+#include "PropertyEditorModule.h"
+#include "Framework/Docking/LayoutExtender.h"
+#include "WorkflowOrientedApp/WorkflowTabManager.h"
+#include "BlueprintEditorModes.h"
+#include "BlueprintEditorModule.h"
+#include "BlueprintEditorTabs.h"
+#include "EdGraphUtilities.h"
 
 #include "SaveActorEditorTabSummoner.h"
 #include "ISaveExtensionEditor.h"

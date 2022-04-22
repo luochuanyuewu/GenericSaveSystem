@@ -37,19 +37,18 @@
 
 #pragma once
 
-#include <CoreMinimal.h>
-#include <Engine/GameInstance.h>
-#include <Engine/Engine.h>
-#include <EngineUtils.h>
-#include <GameFramework/GameModeBase.h>
-#include <GameMapsSettings.h>
-#include <Misc/AutomationTest.h>
-#include <Tests/AutomationCommon.h>
+#include "CoreMinimal.h"
+#include "Engine/GameInstance.h"
+#include "Engine/Engine.h"
+#include "EngineUtils.h"
+#include "GameFramework/GameModeBase.h"
+#include "GameMapsSettings.h"
+#include "Misc/AutomationTest.h"
 
 
 #if WITH_EDITOR
-#	include <Editor.h>
-#	include <Tests/AutomationEditorPromotionCommon.h>
+#	include "Editor.h"
+#	include "Tests/AutomationEditorPromotionCommon.h"
 #endif
 
 ////////////////////////////////////////////////////////////////

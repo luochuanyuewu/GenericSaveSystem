@@ -1,10 +1,10 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 #pragma once
 
-#include <CoreMinimal.h>
-#include <ClassViewerModule.h>
-#include <UObject/WeakObjectPtr.h>
-#include <Templates/SharedPointer.h>
+#include "CoreMinimal.h"
+#include "ClassViewerModule.h"
+#include "UObject/WeakObjectPtr.h"
+#include "Templates/SharedPointer.h"
 
 class IPropertyHandle;
 class IUnloadedBlueprintData;

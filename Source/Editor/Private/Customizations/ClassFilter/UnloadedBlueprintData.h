@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "Editor/ClassViewer/Private/ClassViewerNode.h"
 #include "ClassFilterNode.h"
-#include <ClassViewerFilter.h>
+#include "ClassViewerFilter.h"
 
 
 // Slightly modified version of Engine's FUnloadedBlueprintData. It is private.

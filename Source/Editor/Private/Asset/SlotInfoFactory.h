@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "SlotInfo.h"
+#include "SESlotInfo.h"
 
 #include "AssetTypeActions_Base.h"
 #include "Factories/Factory.h"

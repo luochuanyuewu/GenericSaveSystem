@@ -2,7 +2,7 @@
 
 #include "Automatron.h"
 #include "Helpers/TestActor.h"
-#include "SaveManager.h"
+#include "SESaveManager.h"
 
 
 class FSaveSpec_Preset : public Automatron::FTestSpec
@@ -10,9 +10,9 @@ class FSaveSpec_Preset : public Automatron::FTestSpec
 	GENERATE_SPEC(FSaveSpec_Preset, "SaveExtension",
 		EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter);
 
-	USaveManager* SaveManager = nullptr;
+	USESaveManager* SaveManager = nullptr;
 	ATestActor* TestActor = nullptr;
-	USavePreset* TestPreset = nullptr;
+	USESavePreset* TestPreset = nullptr;
 
 	// Helper for some test delegates
 	bool bFinishTick = false;
@@ -36,7 +36,7 @@ class FSaveSpec_Preset : public Automatron::FTestSpec
 void FSaveSpec_Preset::Define()
 {
 	BeforeEach([this]() {
-		SaveManager = USaveManager::Get(GetMainWorld());
+		SaveManager = USESaveManager::Get(GetMainWorld());
 		TestNotNull(TEXT("SaveManager"), SaveManager);
 
 		SaveManager->bTickWithGameWorld = true;
@@ -57,7 +57,7 @@ void FSaveSpec_Preset::Define()
 
 	Describe("Serialization", [this]() {
 		BeforeEach([this]() {
-			TestPreset = SaveManager->SetActivePreset(USavePreset::StaticClass());
+			TestPreset = SaveManager->SetActivePreset(USESavePreset::StaticClass());
 			TestPreset->ActorFilter.ClassFilter.AllowedClasses.Add(ATestActor::StaticClass());
 
 			// We don't need Async files are tested independently

@@ -5,10 +5,10 @@
 #include "DetailLayoutBuilder.h"
 #include "DetailCategoryBuilder.h"
 #include "DetailWidgetRow.h"
-#include <Widgets/Layout/SBorder.h>
-#include <EditorStyleSet.h>
+#include "Widgets/Layout/SBorder.h"
+#include "EditorStyleSet.h"
 
-#include "SavePreset.h"
+#include "SESavePreset.h"
 
 #define LOCTEXT_NAMESPACE "FSavePresetDetails"
 
@@ -29,7 +29,7 @@ void FSavePresetDetails::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 
 	if (Objects.Num() && Objects[0] != nullptr)
 	{
-		Settings = CastChecked<USavePreset>(Objects[0].Get());
+		Settings = CastChecked<USESavePreset>(Objects[0].Get());
 
 		DetailBuilder.EditCategory(TEXT("Gameplay"));
 		DetailBuilder.EditCategory(TEXT("Serialization"));

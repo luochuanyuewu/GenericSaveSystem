@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <CoreMinimal.h>
-#include <GameFramework/Actor.h>
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "TestActor.generated.h"
 
 

@@ -7,11 +7,11 @@
 USlotInfoFactory::USlotInfoFactory() : Super() {
 	bCreateNew = true;
 	bEditAfterNew = true;
-	SupportedClass = USlotInfo::StaticClass();
+	SupportedClass = USESlotInfo::StaticClass();
 }
 
 UObject* USlotInfoFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) {
-	check(Class->IsChildOf(USlotInfo::StaticClass()));
+	check(Class->IsChildOf(USESlotInfo::StaticClass()));
 
 	if (!FKismetEditorUtilities::CanCreateBlueprintOfClass(Class))
 	{

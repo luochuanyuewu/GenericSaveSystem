@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <Widgets/SCompoundWidget.h>
-#include <Widgets/Input/SCheckBox.h>
+#include "Widgets/SCompoundWidget.h"
+#include "Widgets/Input/SCheckBox.h"
 
 struct FTagInfo
 {

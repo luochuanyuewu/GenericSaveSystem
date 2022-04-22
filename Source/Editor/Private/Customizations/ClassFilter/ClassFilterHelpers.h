@@ -2,26 +2,22 @@
 #pragma once
 
 #include "ClassFilterNode.h"
-#include <AssetData.h>
-#include <Engine/Blueprint.h>
-#include <Kismet2/KismetEditorUtilities.h>
-#include <CoreGlobals.h>
-#include <Misc/MessageDialog.h>
-#include <PackageTools.h>
+#include "AssetData.h"
+#include "Engine/Blueprint.h"
+#include "Kismet2/KismetEditorUtilities.h"
+#include "CoreGlobals.h"
+#include "Misc/MessageDialog.h"
+#include "PackageTools.h"
 #include "AssetEditorModeManager.h"
-#include <AssetRegistryModule.h>
-#include <EditorDirectories.h>
-#include <Dialogs/Dialogs.h>
-#include <AssetToolsModule.h>
-#include <IContentBrowserSingleton.h>
-#include <ContentBrowserModule.h>
-#include <GameProjectGeneration/Public/GameProjectGenerationModule.h>
-#include <Logging/MessageLog.h>
-#include <SourceCodeNavigation.h>
-#include <Framework/Multibox/MultiBoxBuilder.h>
-#include <Misc/FeedbackContext.h>
-#include <Misc/ConfigCacheIni.h>
-#include "Misc/ClassFilter.h"
+#include "AssetRegistryModule.h"
+#include "EditorDirectories.h"
+#include "Dialogs/Dialogs.h"
+#include "AssetToolsModule.h"
+#include "IContentBrowserSingleton.h"
+#include "Logging/MessageLog.h"
+#include "Misc/FeedbackContext.h"
+#include "Misc/ConfigCacheIni.h"
+#include "Misc/SEClassFilter.h"
 
 #define LOCTEXT_NAMESPACE "ClassFilterHelpers"
 

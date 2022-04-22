@@ -1,11 +1,11 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 #pragma once
 
-#include <CoreMinimal.h>
-#include <Widgets/DeclarativeSyntaxSupport.h>
-#include <Widgets/SWidget.h>
-#include <Widgets/Views/STableViewBase.h>
-#include <Widgets/Views/STableRow.h>
+#include "CoreMinimal.h"
+#include "Widgets/DeclarativeSyntaxSupport.h"
+#include "Widgets/SWidget.h"
+#include "Widgets/Views/STableViewBase.h"
+#include "Widgets/Views/STableRow.h"
 #include "ClassFilter/SClassFilter.h"
 #include "SGraphPin.h"
 #include "SEClassFilterCustomization.h"

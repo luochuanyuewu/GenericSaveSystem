@@ -4,7 +4,7 @@
 
 #include "Modules/ModuleManager.h"
 #include "Engine/Engine.h"
-#include "SavePreset.h"
+#include "SESavePreset.h"
 
 
 DECLARE_LOG_CATEGORY_EXTERN(LogSaveExtension, All, All);
@@ -18,12 +18,12 @@ public:
 		return FModuleManager::Get().IsModuleLoaded("SaveExtension");
 	}
 
-	static void Log(const USavePreset* Preset, const FString Message, bool bError)
+	static void Log(const USESavePreset* Preset, const FString Message, bool bError)
 	{
 		Log(Preset, Message, FColor::White, bError, 2.f);
 	}
 
-	static void Log(const USavePreset* Preset, const FString Message, FColor Color = FColor::White, bool bError = false, const float Duration = 2.f)
+	static void Log(const USESavePreset* Preset, const FString Message, FColor Color = FColor::White, bool bError = false, const float Duration = 2.f)
 	{
 		if (Preset->bDebug)
 		{

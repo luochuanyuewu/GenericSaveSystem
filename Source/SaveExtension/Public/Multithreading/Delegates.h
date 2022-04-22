@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 
-DECLARE_DELEGATE_OneParam(FOnSlotInfosLoaded, const TArray<class USlotInfo*>&);
+DECLARE_DELEGATE_OneParam(FOnSESlotInfosLoaded, const TArray<class USESlotInfo*>&);
 
 // @param Amount of slots removed
 DECLARE_DELEGATE(FOnSlotsDeleted);

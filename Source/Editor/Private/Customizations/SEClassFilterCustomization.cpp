@@ -2,13 +2,13 @@
 
 #include "Customizations/SEClassFilterCustomization.h"
 
-#include <DetailWidgetRow.h>
-#include <Widgets/Input/SComboButton.h>
-#include <Widgets/Input/SButton.h>
-#include <ScopedTransaction.h>
-#include <Editor.h>
-#include <Widgets/Images/SImage.h>
-#include <Widgets/Layout/SScaleBox.h>
+#include "DetailWidgetRow.h"
+#include "Widgets/Input/SComboButton.h"
+#include "Widgets/Input/SButton.h"
+#include "ScopedTransaction.h"
+#include "Editor.h"
+#include "Widgets/Images/SImage.h"
+#include "Widgets/Layout/SScaleBox.h"
 
 #define LOCTEXT_NAMESPACE "FSEClassFilterCustomization"
 

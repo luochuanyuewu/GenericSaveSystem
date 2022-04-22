@@ -44,7 +44,7 @@ BraceWrapping:
   SplitEmptyFunction: false
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
-ColumnLimit: 110
+ColumnLimit: 200
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 AllowAllConstructorInitializersOnNextLine: false

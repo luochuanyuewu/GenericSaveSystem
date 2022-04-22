@@ -2,8 +2,8 @@
 
 #include "Automatron.h"
 #include "Helpers/TestActor.h"
-#include "SaveManager.h"
-#include "FileAdapter.h"
+#include "SESaveManager.h"
+#include "SEFileAdapter.h"
 
 
 class FSaveSpec_Files : public Automatron::FTestSpec
@@ -11,9 +11,9 @@ class FSaveSpec_Files : public Automatron::FTestSpec
 	GENERATE_SPEC(FSaveSpec_Files, "SaveExtension.Files",
 		EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter);
 
-	USaveManager* SaveManager = nullptr;
+	USESaveManager* SaveManager = nullptr;
 	ATestActor* TestActor = nullptr;
-	USavePreset* TestPreset = nullptr;
+	USESavePreset* TestPreset = nullptr;
 
 	// Helper for some test delegates
 	bool bFinishTick = false;
@@ -29,13 +29,13 @@ class FSaveSpec_Files : public Automatron::FTestSpec
 void FSaveSpec_Files::Define()
 {
 	BeforeEach([this]() {
-		SaveManager = USaveManager::Get(GetMainWorld());
+		SaveManager = USESaveManager::Get(GetMainWorld());
 		TestNotNull(TEXT("SaveManager"), SaveManager);
 
 		SaveManager->bTickWithGameWorld = true;
 
 		// Set test preset
-		TestPreset = SaveManager->SetActivePreset(USavePreset::StaticClass());
+		TestPreset = SaveManager->SetActivePreset(USESavePreset::StaticClass());
 		TestPreset->MultithreadedSerialization = ESaveASyncMode::OnlySync;
 	});
 
@@ -44,22 +44,22 @@ void FSaveSpec_Files::Define()
 
 		TestTrue("Saved", SaveManager->SaveSlot(0));
 
-		TestTrue("Info File exists in disk", FFileAdapter::DoesFileExist(TEXT("0")));
+		TestTrue("Info File exists in disk", FSEFileAdapter::DoesFileExist(TEXT("0")));
 	});
 
 	It("Can save files asynchronously", [this]() {
 		TestPreset->MultithreadedFiles = ESaveASyncMode::SaveAsync;
 		bFinishTick = false;
 
-		bool bSaving = SaveManager->SaveSlot(0, true, false, {}, FOnGameSaved::CreateLambda([this](auto* Info) {
+		bool bSaving = SaveManager->SaveSlot(0, true, false, {}, FOnSEGameSaved::CreateLambda([this](auto* Info) {
 			// Notified that files have been saved asynchronously
-			TestTrue("Info File exists in disk", FFileAdapter::DoesFileExist(TEXT("0")));
+			TestTrue("Info File exists in disk", FSEFileAdapter::DoesFileExist(TEXT("0")));
 			bFinishTick = true;
 		}));
 		TestTrue("Started Saving", bSaving);
 
 		// Files shouldn't exist yet
-		TestFalse("Info File exists in disk", FFileAdapter::DoesFileExist(TEXT("0")));
+		TestFalse("Info File exists in disk", FSEFileAdapter::DoesFileExist(TEXT("0")));
 
 		TickWorldUntil(GetMainWorld(), true, [this](float) {
 			return !bFinishTick;
@@ -71,9 +71,9 @@ void FSaveSpec_Files::Define()
 
 		TestTrue("Saved", SaveManager->SaveSlot(0));
 
-		USlotInfo* Info = nullptr;
-		USlotData* Data = nullptr;
-		TestTrue("File was loaded", FFileAdapter::LoadFile(TEXT("0"), Info, Data, true, SaveManager));
+		USESlotInfo* Info = nullptr;
+		USESlotData* Data = nullptr;
+		TestTrue("File was loaded", FSEFileAdapter::LoadFile(TEXT("0"), Info, Data, true, SaveManager));
 		TestNotNull("Info is valid", Info);
 		TestNotNull("Data is valid", Data);
 	});
