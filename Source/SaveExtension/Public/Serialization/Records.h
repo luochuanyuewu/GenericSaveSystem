@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <CoreMinimal.h>
-#include <Engine/LevelStreaming.h>
-#include <Engine/LevelScriptActor.h>
+#include "CoreMinimal.h"
+#include "Engine/LevelStreaming.h"
+#include "Engine/LevelScriptActor.h"
 
 #include "Records.generated.h"
 
@@ -98,6 +98,9 @@ struct FActorRecord : public FObjectRecord
 
 	FActorRecord() : Super() {}
 	FActorRecord(const AActor* Actor) : Super(Actor) {}
-
 	virtual bool Serialize(FArchive& Ar) override;
+	FORCEINLINE bool operator== (const UObject* Other) const
+	{
+		return Other && Name == Other->GetFName() && Class == Other->GetClass();
+	}
 };

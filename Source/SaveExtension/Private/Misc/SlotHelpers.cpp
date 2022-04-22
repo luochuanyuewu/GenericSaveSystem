@@ -1,8 +1,8 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
-#include <Misc/SlotHelpers.h>
-#include <Misc/Paths.h>
-#include <HAL/PlatformFilemanager.h>
+#include "Misc/SlotHelpers.h"
+#include "Misc/Paths.h"
+#include "HAL/PlatformFilemanager.h"
 
 
 void FSlotHelpers::FindSlotFileNames(TArray<FString>& FoundSlots)

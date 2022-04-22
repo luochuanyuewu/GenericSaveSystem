@@ -11,7 +11,6 @@ ULifetimeComponent::ULifetimeComponent()
 void ULifetimeComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	if (USaveManager* Manager = GetManager())
 	{
 		Manager->SubscribeForEvents(this);

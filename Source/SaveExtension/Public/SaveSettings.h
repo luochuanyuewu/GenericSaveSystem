@@ -4,8 +4,8 @@
 
 #include "SavePreset.h"
 
-#include <CoreMinimal.h>
-#include <Engine/DeveloperSettings.h>
+#include "CoreMinimal.h"
+#include "Engine/DeveloperSettings.h"
 
 #include "SaveSettings.generated.h"
 
@@ -19,6 +19,13 @@ protected:
 
     UPROPERTY(EditAnywhere, Category = "Save Extension", Config, meta = (DisplayName = "Preset"))
 	TSubclassOf<USavePreset> Preset;
+
+	/**
+	 * 定义用作唯一ID的属性的名字，会通过反射查找Actor是否有此属性来判定唯一性。
+	 */
+	UPROPERTY(EditAnywhere, Category = "Save Extension", Config)
+	FString GuidPropertyName = "SaveGuid";
+
 
 public:
 

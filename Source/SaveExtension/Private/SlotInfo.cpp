@@ -2,13 +2,13 @@
 
 #include "SlotInfo.h"
 
-#include <EngineUtils.h>
-#include <IImageWrapper.h>
-#include <IImageWrapperModule.h>
-#include <HighResScreenshot.h>
-#include <Engine/GameViewportClient.h>
-#include <Misc/FileHelper.h>
-#include <Engine/Engine.h>
+#include "EngineUtils.h"
+#include "IImageWrapper.h"
+#include "IImageWrapperModule.h"
+#include "HighResScreenshot.h"
+#include "Engine/GameViewportClient.h"
+#include "Misc/FileHelper.h"
+#include "Engine/Engine.h"
 
 
 UTexture2D* USlotInfo::GetThumbnail() const

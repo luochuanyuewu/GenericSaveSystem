@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <CoreMinimal.h>
+#include "CoreMinimal.h"
 
 
 DECLARE_DELEGATE_OneParam(FOnSlotInfosLoaded, const TArray<class USlotInfo*>&);

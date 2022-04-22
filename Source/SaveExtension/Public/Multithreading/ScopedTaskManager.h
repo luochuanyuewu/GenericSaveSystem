@@ -4,7 +4,7 @@
 
 #include "Misc/TypeTraits.h"
 
-#include <Async/AsyncWork.h>
+#include "Async/AsyncWork.h"
 
 class ITaskHolder
 {

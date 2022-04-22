@@ -2,8 +2,8 @@
 
 #include "Misc/ClassFilter.h"
 
-#include <Misc/Parse.h>
-#include <UObject/UObjectIterator.h>
+#include "Misc/Parse.h"
+#include "UObject/UObjectIterator.h"
 
 
 FSEClassFilter::FSEClassFilter(UClass* BaseClass)

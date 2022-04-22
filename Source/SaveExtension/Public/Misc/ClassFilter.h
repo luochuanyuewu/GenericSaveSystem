@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include <GameFramework/Actor.h>
-#include <Components/ActorComponent.h>
+#include "GameFramework/Actor.h"
+#include "Components/ActorComponent.h"
 #include "ClassFilter.generated.h"
 
 
