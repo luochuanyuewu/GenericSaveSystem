@@ -61,7 +61,7 @@ void USESaveManager::Deinitialize()
 }
 
 bool USESaveManager::SaveSlot(
-	FName SlotName, bool bOverrideIfNeeded, bool bScreenshot, const FScreenshotSize Size, FOnSEGameSaved OnSaved)
+	FName SlotName, bool bOverrideIfNeeded, bool bScreenshot, const FSEScreenshotSize Size, FOnSEGameSaved OnSaved)
 {
 	if (!CanLoadOrSave())
 		return false;
@@ -150,7 +150,7 @@ void USESaveManager::DeleteAllSlots(FOnSlotsDeleted Delegate)
 		.StartBackgroundTask();
 }
 
-void USESaveManager::BPSaveSlot(FName SlotName, bool bScreenshot, const FScreenshotSize Size,
+void USESaveManager::BPSaveSlot(FName SlotName, bool bScreenshot, const FSEScreenshotSize Size,
 	ESESaveGameResult& Result, struct FLatentActionInfo LatentInfo, bool bOverrideIfNeeded /*= true*/)
 {
 	if (UWorld* World = GetWorld())

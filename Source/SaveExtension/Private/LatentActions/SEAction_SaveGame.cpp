@@ -5,7 +5,7 @@
 #include "SESlotInfo.h"
 
 
-FSEAction_SaveGame::FSEAction_SaveGame(USESaveManager* Manager, FName SlotName, bool bOverrideIfNeeded, bool bScreenshot, const FScreenshotSize Size, ESESaveGameResult& OutResult, const FLatentActionInfo& LatentInfo)
+FSEAction_SaveGame::FSEAction_SaveGame(USESaveManager* Manager, FName SlotName, bool bOverrideIfNeeded, bool bScreenshot, const FSEScreenshotSize Size, ESESaveGameResult& OutResult, const FLatentActionInfo& LatentInfo)
 	: Result(OutResult)
 	, ExecutionFunction(LatentInfo.ExecutionFunction)
 	, OutputLink(LatentInfo.Linkage)

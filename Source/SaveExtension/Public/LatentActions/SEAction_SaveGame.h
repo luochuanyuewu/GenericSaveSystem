@@ -9,7 +9,7 @@
 
 class USESaveManager;
 class USESlotInfo;
-struct FScreenshotSize;
+struct FSEScreenshotSize;
 
 /**
  * Enum used to indicate quote execution results
@@ -33,7 +33,7 @@ public:
 	FWeakObjectPtr CallbackTarget;
 
 
-	FSEAction_SaveGame(USESaveManager* Manager, FName SlotName, bool bOverrideIfNeeded, bool bScreenshot, const FScreenshotSize Size, ESESaveGameResult& OutResult,
+	FSEAction_SaveGame(USESaveManager* Manager, FName SlotName, bool bOverrideIfNeeded, bool bScreenshot, const FSEScreenshotSize Size, ESESaveGameResult& OutResult,
 		const FLatentActionInfo& LatentInfo);
 
 	virtual void UpdateOperation(FLatentResponse& Response) override;
