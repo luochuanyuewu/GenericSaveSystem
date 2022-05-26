@@ -14,6 +14,7 @@
 #include "SESlotInfo.h"
 #include "SESlotData.h"
 #include "Multithreading/SETask_SaveFile.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 
 static const int SE_SAVEGAME_FILE_TYPE_TAG = 0x0001;		// "sAvG"

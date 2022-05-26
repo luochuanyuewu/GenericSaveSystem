@@ -4,12 +4,6 @@
 
 #include "ISaveExtension.h"
 
-#if WITH_EDITORONLY_DATA
- #include "ISettingsModule.h"
- #include "ISettingsSection.h"
- #include "ISettingsContainer.h"
-#endif
-
 
 class FSaveExtension : public ISaveExtension
 {

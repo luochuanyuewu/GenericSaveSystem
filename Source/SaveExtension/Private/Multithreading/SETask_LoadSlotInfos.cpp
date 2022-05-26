@@ -60,6 +60,11 @@ void FSETask_LoadSlotInfos::AfterFinish()
 {
 	for(auto& Slot : LoadedSlots)
 	{
+		if (!IsValid(Slot))
+		{
+			//以防关闭编辑器崩溃
+			continue;
+		}
 		Slot->ClearInternalFlags(EInternalObjectFlags::Async);
 	}
 	Delegate.ExecuteIfBound(LoadedSlots);

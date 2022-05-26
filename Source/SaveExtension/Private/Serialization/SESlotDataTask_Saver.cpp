@@ -1,10 +1,7 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "Serialization/SESlotDataTask_Saver.h"
-
 #include "GameFramework/GameModeBase.h"
-#include "Serialization/MemoryWriter.h"
-
 #include "Misc/SESlotHelpers.h"
 #include "SESaveManager.h"
 #include "SESlotInfo.h"
@@ -13,9 +10,6 @@
 #include "SEFileAdapter.h"
 
 
-/////////////////////////////////////////////////////
-// USaveDataTask_Saver
-
 void USESlotDataTask_Saver::OnStart()
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Saver::OnStart);
@@ -23,16 +17,16 @@ void USESlotDataTask_Saver::OnStart()
 	Manager->TryInstantiateInfo();
 
 	bool bSave = true;
-	const FString SlotNameStr = SlotName.ToString();
+	const FString SlotNameString = SlotName.ToString();
 	//Overriding
 	{
-		const bool bFileExists = FSEFileAdapter::DoesFileExist(SlotNameStr);
+		const bool bFileExists = FSEFileAdapter::DoesFileExist(SlotNameString);
 		if (bOverride)
 		{
 			// Delete previous save
 			if (bFileExists)
 			{
-				FSEFileAdapter::DeleteFile(SlotNameStr);
+				FSEFileAdapter::DeleteFile(SlotNameString);
 			}
 		}
 		else
@@ -93,7 +87,7 @@ void USESlotDataTask_Saver::OnStart()
 		}
 
 		//Save Level info in both files
-		SlotInfo->Map = FName{ FSESlotHelpers::GetWorldName(World) };
+		SlotInfo->Map = FName{FSESlotHelpers::GetWorldName(World)};
 		SlotData->Map = SlotData->Map;
 
 		SlotData->bStoreGameInstance = Preset->bStoreGameInstance;
@@ -141,11 +135,11 @@ void USESlotDataTask_Saver::OnFinish(bool bSuccess)
 	// Execute delegates
 	USESaveManager* Manager = GetManager();
 	check(Manager);
-	Delegate.ExecuteIfBound((Manager && bSuccess)? Manager->GetCurrentInfo() : nullptr);
+	Delegate.ExecuteIfBound((Manager && bSuccess) ? Manager->GetCurrentInfo() : nullptr);
 	Manager->OnSaveFinished(
-		SlotData? GetGeneralFilter() : FSELevelFilter{},
+		SlotData ? GetGeneralFilter() : FSELevelFilter{},
 		!bSuccess
-	);
+		);
 }
 
 void USESlotDataTask_Saver::BeginDestroy()
@@ -201,7 +195,7 @@ void USESlotDataTask_Saver::PrepareAllLevels(const TArray<ULevelStreaming*>& Lev
 	{
 		if (Level->IsLevelLoaded())
 		{
-			SlotData->SubLevels.AddUnique({ *Level });
+			SlotData->SubLevels.AddUnique({*Level});
 		}
 	}
 }

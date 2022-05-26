@@ -12,7 +12,8 @@
 * Specifies the behavior while saving or loading
 */
 UENUM()
-enum class ESaveASyncMode : uint8 {
+enum class ESaveASyncMode : uint8
+{
 	OnlySync,
 	LoadAsync,
 	SaveAsync,
@@ -32,7 +33,6 @@ class SAVEEXTENSION_API USESavePreset : public UObject
 	GENERATED_BODY()
 
 public:
-
 	/**
 	* Specify the SaveInfo object to be used with this preset
 	*/
@@ -61,7 +61,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (EditCondition = "bAutoSave"))
 	bool bSaveOnExit = false;
 
-	/** If checked, will attempt to Load Game from last Slot found, when game starts */
+	/** If checked, will attempt to Load Game from last Slot found, when game starts
+	 * 会在存档子系统Initialize时调用.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	bool bAutoLoad = true;
 
@@ -115,7 +117,6 @@ public:
 	FSEComponentClassFilter LoadComponentFilter;
 
 public:
-
 	/** Serialization will be multi-threaded between all available cores. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asynchronous")
 	ESaveASyncMode MultithreadedSerialization = ESaveASyncMode::SaveAsync;
@@ -141,7 +142,6 @@ public:
 
 
 protected:
-
 	/** If true, will Save and Load levels when they are shown or hidden.
 	 * This includes level streaming and world composition.
 	 */
@@ -150,20 +150,17 @@ protected:
 
 
 public:
-
 	USESavePreset();
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Slots", meta = (DisplayName="Get Slot Name from Id"))
 	void BPGetSlotNameFromId(int32 Id, FName& Name) const;
 
 protected:
-
 	virtual void GetSlotNameFromId(int32 Id, FName& Name) const;
 
 
 	/** HELPERS */
 public:
-
 	int32 GetMaxIds() const;
 
 	bool IsValidId(int32 Id) const;
@@ -171,12 +168,12 @@ public:
 	UFUNCTION(BlueprintPure, Category = SavePreset)
 	FSEActorClassFilter& GetActorFilter(bool bIsLoading)
 	{
-		return (bIsLoading && bUseLoadActorFilter)? LoadActorFilter : ActorFilter;
+		return (bIsLoading && bUseLoadActorFilter) ? LoadActorFilter : ActorFilter;
 	}
 
 	const FSEActorClassFilter& GetActorFilter(bool bIsLoading) const
 	{
-		return (bIsLoading && bUseLoadActorFilter)? LoadActorFilter : ActorFilter;
+		return (bIsLoading && bUseLoadActorFilter) ? LoadActorFilter : ActorFilter;
 	}
 
 	UFUNCTION(BlueprintPure, Category = SavePreset)
@@ -194,6 +191,7 @@ public:
 	{
 		return MultithreadedSerialization == ESaveASyncMode::LoadAsync || MultithreadedSerialization == ESaveASyncMode::SaveAndLoadAsync;
 	}
+
 	bool IsMTSerializationSave() const
 	{
 		return MultithreadedSerialization == ESaveASyncMode::SaveAsync || MultithreadedSerialization == ESaveASyncMode::SaveAndLoadAsync;
@@ -206,6 +204,7 @@ public:
 	{
 		return !IsMTSerializationLoad() && (FrameSplittedSerialization == ESaveASyncMode::LoadAsync || FrameSplittedSerialization == ESaveASyncMode::SaveAndLoadAsync);
 	}
+
 	bool IsFrameSplitSave() const
 	{
 		return !IsMTSerializationSave() && (FrameSplittedSerialization == ESaveASyncMode::SaveAsync || FrameSplittedSerialization == ESaveASyncMode::SaveAndLoadAsync);
@@ -215,6 +214,7 @@ public:
 	{
 		return MultithreadedFiles == ESaveASyncMode::LoadAsync || MultithreadedFiles == ESaveASyncMode::SaveAndLoadAsync;
 	}
+
 	bool IsMTFilesSave() const
 	{
 		return MultithreadedFiles == ESaveASyncMode::SaveAsync || MultithreadedFiles == ESaveASyncMode::SaveAndLoadAsync;

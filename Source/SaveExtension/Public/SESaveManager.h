@@ -21,6 +21,7 @@
 #include "SESaveManager.generated.h"
 
 
+enum class ESELoadInfoResult : uint8;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameSavedMC, USESlotInfo*, SlotInfo);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameLoadedMC, USESlotInfo*, SlotInfo);
@@ -122,20 +123,16 @@ public:
 	/** C++ ONLY API */
 
 	/** Save the Game into an specified slot name */
-	bool SaveSlot(FName SlotName, bool bOverrideIfNeeded = true, bool bScreenshot = false,
-		const FSEScreenshotSize Size = {}, FOnSEGameSaved OnSaved = {});
+	bool SaveSlot(FName SlotName, bool bOverrideIfNeeded = true, bool bScreenshot = false, const FSEScreenshotSize Size = {}, FOnSEGameSaved OnSaved = {});
 
 	/** Save the Game info an SlotInfo */
-	bool SaveSlot(const USESlotInfo* SlotInfo, bool bOverrideIfNeeded = true, bool bScreenshot = false,
-		const FSEScreenshotSize Size = {}, FOnSEGameSaved OnSaved = {});
+	bool SaveSlot(const USESlotInfo* SlotInfo, bool bOverrideIfNeeded = true, bool bScreenshot = false, const FSEScreenshotSize Size = {}, FOnSEGameSaved OnSaved = {});
 
 	/** Save the Game into an specified slot id */
-	bool SaveSlot(int32 SlotId, bool bOverrideIfNeeded = true, bool bScreenshot = false,
-		const FSEScreenshotSize Size = {}, FOnSEGameSaved OnSaved = {});
+	bool SaveSlot(int32 SlotId, bool bOverrideIfNeeded = true, bool bScreenshot = false, const FSEScreenshotSize Size = {}, FOnSEGameSaved OnSaved = {});
 
 	/** Save the currently loaded Slot */
 	bool SaveCurrentSlot(bool bScreenshot = false, const FSEScreenshotSize Size = {}, FOnSEGameSaved OnSaved = {});
-
 
 	/** Load game from a file name */
 	bool LoadSlot(FName SlotName, FOnSEGameLoaded OnLoaded = {});
@@ -230,11 +227,8 @@ public:
 	 * @param bSortByRecent Should slots be ordered by save date?
 	 * @param SaveInfos All saved games found on disk
 	 */
-	UFUNCTION(BlueprintCallable, Category = "SaveExtension",
-		meta = (Latent, LatentInfo = "LatentInfo", ExpandEnumAsExecs = "Result",
-			DisplayName = "Load All Slot Infos"))
-	void BPLoadAllSlotInfos(const bool bSortByRecent, TArray<USESlotInfo*>& SaveInfos, ESELoadInfoResult& Result,
-		struct FLatentActionInfo LatentInfo);
+	UFUNCTION(BlueprintCallable, Category = "SaveExtension", meta = (Latent, LatentInfo = "LatentInfo", ExpandEnumAsExecs = "Result", DisplayName = "Load All Slot Infos"))
+	void BPLoadAllSlotInfos(const bool bSortByRecent, TArray<USESlotInfo*>& SaveInfos, ESELoadInfoResult& Result, struct FLatentActionInfo LatentInfo);
 
 	/** Delete a saved game on an specified slot Id
 	 * Performance: Interacts with disk, can be slow
@@ -582,7 +576,9 @@ inline USESaveManager* USESaveManager::Get(const UObject* Context)
 
 inline bool USESaveManager::IsTickable() const
 {
-	return !HasAnyFlags(RF_ClassDefaultObject) && !IsValid(this);
+	bool bMet = !HasAnyFlags(RF_ClassDefaultObject);
+
+	return bMet && IsValid(this);
 }
 
 inline UWorld* USESaveManager::GetTickableGameObjectWorld() const
@@ -592,5 +588,5 @@ inline UWorld* USESaveManager::GetTickableGameObjectWorld() const
 
 inline TStatId USESaveManager::GetStatId() const
 {
-	RETURN_QUICK_DECLARE_CYCLE_STAT(USaveManager, STATGROUP_Tickables);
+	RETURN_QUICK_DECLARE_CYCLE_STAT(USESaveManager, STATGROUP_Tickables);
 }
