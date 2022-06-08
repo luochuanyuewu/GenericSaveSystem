@@ -12,6 +12,14 @@ bool FSEBaseRecord::Serialize(FArchive& Ar)
 	return true;
 }
 
+bool FSEDataRecord::Serialize(FArchive& Ar)
+{
+	Super::Serialize(Ar);
+	
+	Ar << Data;
+	return true;
+}
+
 FSEObjectRecord::FSEObjectRecord(const UObject* Object) : Super()
 {
 	Class = nullptr;

@@ -21,6 +21,7 @@
 #include "SESaveManager.generated.h"
 
 
+class USESaverBase;
 enum class ESELoadInfoResult : uint8;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameSavedMC, USESlotInfo*, SlotInfo);
 
@@ -115,6 +116,12 @@ public:
 	virtual void Deinitialize() override;
 	/** End USubsystem */
 
+	/** Begin Saver */
+	void RegisterSaver(USESaverBase* Saver);
+	void UnregisterSaver(USESaverBase* Saver);
+	TArray<USESaverBase*> Savers;
+	/** End Saver*/
+
 	void SetGameInstance(UGameInstance* GameInstance)
 	{
 		OwningGameInstance = GameInstance;
@@ -164,6 +171,12 @@ public:
 
 	/** Delete all saved slots from disk, loaded or not */
 	void DeleteAllSlots(FOnSlotsDeleted Delegate);
+
+
+	void SerializeToBinary(UObject* Object, TArray<uint8>& OutData);
+	FString SerializeToBinaryString(UObject* Object);
+	void SerializeFromBinary(UObject* Object, const TArray<uint8>& InData);
+	void SerializeFromBinaryString(UObject* Object, const FString& InData);
 
 
 	/** BLUEPRINT ONLY API */

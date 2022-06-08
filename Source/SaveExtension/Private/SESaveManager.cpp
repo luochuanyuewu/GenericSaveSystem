@@ -21,6 +21,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Misc/CoreDelegates.h"
 #include "Misc/Paths.h"
+#include "Saver/SESaverBase.h"
+#include "Serialization/SEArchive.h"
 
 
 USESaveManager::USESaveManager()
@@ -60,6 +62,26 @@ void USESaveManager::Deinitialize()
 	FCoreUObjectDelegates::PreLoadMap.RemoveAll(this);
 	FCoreUObjectDelegates::PostLoadMapWithWorld.RemoveAll(this);
 	FGameDelegates::Get().GetEndPlayMapDelegate().RemoveAll(this);
+}
+
+void USESaveManager::RegisterSaver(USESaverBase* Saver)
+{
+	for (int i = 0; i < Savers.Num(); i++)
+	{
+		if (Savers[i]->GetFullKey() != Saver->GetFullKey()) { continue; }
+
+		if (Savers[i] != Saver)
+		{
+			SELog(GetPreset(),TEXT("Saver won't be registered because one with the same key is already registered"));
+		}
+		return;
+	}
+	Savers.Add(Saver);
+}
+
+void USESaveManager::UnregisterSaver(USESaverBase* Saver)
+{
+	Savers.Remove(Saver);
 }
 
 bool USESaveManager::SaveSlot(
@@ -150,6 +172,40 @@ void USESaveManager::DeleteAllSlots(FOnSlotsDeleted Delegate)
 		       Delegate.ExecuteIfBound();
 	       })
 	       .StartBackgroundTask();
+}
+
+void USESaveManager::SerializeToBinary(UObject* Object, TArray<uint8>& OutData)
+{
+	FMemoryWriter MemoryWriter(OutData, true);
+	FSEArchive Archive(MemoryWriter, false);
+	Object->Serialize(Archive);
+	MemoryWriter.FlushCache();
+	MemoryWriter.Close();
+}
+
+FString USESaveManager::SerializeToBinaryString(UObject* Object)
+{
+	TArray<uint8> Bytes;
+	SerializeToBinary(Object,Bytes);
+	return BytesToString(Bytes.GetData(),Bytes.Num());
+}
+
+void USESaveManager::SerializeFromBinaryString(UObject* Object, const FString& InData)
+{
+	TArray<uint8> Bytes;
+	StringToBytes(InData,Bytes.GetData(),InData.Len());
+	SerializeFromBinary(Object,Bytes);
+}
+
+void USESaveManager::SerializeFromBinary(UObject* Object, const TArray<uint8>& InData)
+{
+	//Serialize from Record Data
+	FMemoryReader MemoryReader(InData, true);
+	FSEArchive Archive(MemoryReader, false);
+	Object->Serialize(Archive);
+	MemoryReader.FlushCache();
+	MemoryReader.Close();
+	
 }
 
 void USESaveManager::BPSaveSlot(FName SlotName, bool bScreenshot, const FSEScreenshotSize Size,
@@ -413,6 +469,10 @@ void USESaveManager::OnSaveBegan(const FSELevelFilter& Filter)
 		}
 		ISESaveInterface::Execute_ReceiveOnSaveBegan(Object, Filter);
 	});
+	for (auto Saver : Savers)
+	{
+		Saver->SaveData();
+	}
 }
 
 void USESaveManager::OnSaveFinished(const FSELevelFilter& Filter, const bool bError)
@@ -467,6 +527,10 @@ void USESaveManager::OnLoadFinished(const FSELevelFilter& Filter, const bool bEr
 		ISESaveInterface::Execute_ReceiveOnLoadFinished(Object, Filter, bError);
 	});
 
+	for (auto Saver : Savers)
+	{
+		Saver->LoadData();
+	}
 	if (!bError)
 	{
 		OnGameLoaded.Broadcast(CurrentInfo);

@@ -37,6 +37,19 @@ struct TStructOpsTypeTraits<FSEBaseRecord> : public TStructOpsTypeTraitsBase2<FS
 FORCEINLINE bool operator==(const FSEBaseRecord& A, const FSEBaseRecord& B) { return A.Name == B.Name; }
 
 
+
+/** Represents a serialized Data */
+USTRUCT()
+struct FSEDataRecord : public FSEBaseRecord
+{
+	GENERATED_BODY()
+
+	TArray<uint8> Data;
+
+	virtual bool Serialize(FArchive& Ar) override;
+};
+
+
 /** Represents a serialized Object */
 USTRUCT()
 struct FSEObjectRecord : public FSEBaseRecord
