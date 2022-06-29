@@ -2,6 +2,7 @@
 
 #include "Serialization/SERecords.h"
 #include "SESlotData.h"
+#include "Saver/SESaverBase.h"
 
 
 // Records
@@ -9,14 +10,6 @@
 bool FSEBaseRecord::Serialize(FArchive& Ar)
 {
 	Ar << Name;
-	return true;
-}
-
-bool FSEDataRecord::Serialize(FArchive& Ar)
-{
-	Super::Serialize(Ar);
-	
-	Ar << Data;
 	return true;
 }
 
@@ -45,6 +38,11 @@ bool FSEObjectRecord::Serialize(FArchive& Ar)
 		Ar << Tags;
 	}
 	return true;
+}
+
+bool FSEObjectRecord::operator==(const USESaverBase* Other) const
+{
+	return Other && Name == FName(Other->GetFullKey()) && Class == Other->GetClass();
 }
 
 bool FSEComponentRecord::Serialize(FArchive& Ar)

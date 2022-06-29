@@ -10,68 +10,162 @@
 // Sets default values for this component's properties
 USESaverBase::USESaverBase()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+	bWantsInitializeComponent = true;
+	//if (HasAnyFlags(RF_ClassDefaultObject) || IsTemplate())
+	//{
+	//	if (bUseGuid && SaveId.IsValid())
+	//	{
+	//		SaveId.Invalidate();
+	//	}
+	//}
+	//else
+	//{
+	//	if (bUseGuid && !SaveId.IsValid())
+	//	{
+	//		SaveId = FGuid::NewGuid();
+	//	}
+	//}
+}
 
-	// ...
+void USESaverBase::PostEditImport()
+{
+	Super::PostEditImport();
+
+	if (!SaveId.IsValid())
+		SaveId = FGuid::NewGuid();
+}
+
+void USESaverBase::Serialize(FArchive& Ar)
+{
+	Super::Serialize(Ar);
+	//
+	//#if WITH_EDITOR
+	//	// 确保在加载的时候生成唯一ID，加载表示：比如Actor放在关卡中，打开所在关卡的时候就会加载;以及读档
+	//	if (Ar.IsLoading())
+	//	{
+	//		if (HasAnyFlags(RF_ClassDefaultObject) || IsTemplate())
+	//
+	//		{
+	//			if (bUseGuid && SaveId.IsValid())
+	//			{
+	//				SaveId.Invalidate();
+	//			}
+	//		}
+	//		else if ((Ar.GetPortFlags() & PPF_Duplicate) || (Ar.IsPersistent() && !SaveId.IsValid()))
+	//		{
+	//			SaveId = FGuid::NewGuid();
+	//		}
+	//	}
+	//#endif
 }
 
 
+void USESaverBase::OnSaveBegan(const FSELevelFilter& Filter)
+{
+	// Saved.Broadcast();
+}
+
+void USESaverBase::OnLoadFinished(const FSELevelFilter& Filter, bool bError)
+{
+	// Resume.Broadcast();
+}
+
 void USESaverBase::SaveData()
 {
-	if (USESaverSlotData* SlotData = Cast<USESaverSlotData>(GetManager()->GetCurrentData()))
+	if (USESaveManager* SE = GetSaveManager())
 	{
-		SlotData->DataRecords[GetFullKey()] = SerializeSaveData();
+		TArray<uint8> Data;
+		if (SerializeData(Data) && !Data.IsEmpty())
+		{
+			const FName Key = FName(GetFullKey());
+			SE->AddToSaverDataV2(Key, Data);
+			UE_LOG(LogTemp, Display, TEXT("Actor:%s Saved With Key:%s"), *GetOwner()->GetName(), *Key.ToString());
+		}
 	}
 }
 
 void USESaverBase::LoadData()
 {
-	if (USESaverSlotData* SlotData = Cast<USESaverSlotData>(GetManager()->GetCurrentData()))
+	if (Timer.IsValid())
 	{
-		if (SlotData->DataRecords.Contains(GetFullKey()))
+		Timer.Invalidate();
+	}
+	if (USESaveManager* SE = GetSaveManager())
+	{
+		TArray<uint8> Data;
+		const FName Key = FName(GetFullKey());
+		if (GetSaveManager()->TryGetSaverDataV2(Key, Data))
 		{
-			DeserializeAndLoadSaveData(SlotData->DataRecords[GetFullKey()]);
+			if (!Data.IsEmpty())
+			{
+				DeserializeData(Data);
+				UE_LOG(LogTemp, Display, TEXT("Actor:%s Loaded With Key:%s"), *GetOwner()->GetName(), *Key.ToString());
+			}
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Actor:%s Has no SavedData With Key:%s"), *GetOwner()->GetName(), *Key.ToString());
 		}
 	}
 }
 
-
-FString USESaverBase::SerializeSaveData()
-{
-	return TEXT("");
-}
-
-void USESaverBase::DeserializeAndLoadSaveData(const FString& SerializedSaveData) { }
-
 FString USESaverBase::GetFullKey() const
 {
-	return FString::Format(TEXT("{0}_{1}_{2}"), {GetName(), GetClass()->GetName(), SaveKey});
+	if (bUseGuid)
+	{
+		return FString::Format(TEXT("{0}_{1}"), {GetClass()->GetName(), SaveId.ToString()});
+	}
+	return FString::Format(TEXT("{0}_{1}"), {GetClass()->GetName(), SaveKey});
 }
+
+bool USESaverBase::SerializeData(TArray<uint8>& SerializedData)
+{
+	return false;
+}
+
+void USESaverBase::DeserializeData(const TArray<uint8>& SerializedData)
+{
+}
+
+void USESaverBase::InitializeComponent()
+{
+	Super::InitializeComponent();
+}
+
+void USESaverBase::UninitializeComponent()
+{
+	Super::UninitializeComponent();
+}
+
 
 void USESaverBase::BeginPlay()
 {
-	GetManager()->RegisterSaver(this);
 	Super::BeginPlay();
-	if (bLoadOnBeginPlay)
+	if (USESaveManager* Manager = GetSaveManager())
 	{
-		LoadData();
+		Manager->RegisterSaver(this);
+		// if (!Manager->IsLoading()) { Start.Broadcast(); }
+		if (bLoadOnBeginPlay)
+		{
+			Timer = GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::LoadData);
+			// LoadData();
+		}
 	}
 }
 
 void USESaverBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	if (USESaveManager* Manager = GetManager())
+	if (USESaveManager* Manager = GetSaveManager())
 	{
 		if (bSaveOnEndPlay)
 			SaveData();
+		// if (!Manager->IsLoading()) { Finish.Broadcast(); }
 		Manager->UnregisterSaver(this);
 	}
 }
 
-USESaveManager* USESaverBase::GetManager()
+USESaveManager* USESaverBase::GetSaveManager()
 {
 	return GetWorld()->GetGameInstance()->GetSubsystem<USESaveManager>();
 }

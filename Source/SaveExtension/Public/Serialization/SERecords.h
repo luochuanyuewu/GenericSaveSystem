@@ -8,6 +8,7 @@
 #include "Engine/LevelScriptActor.h"
 #include "SERecords.generated.h"
 
+class USESaverBase;
 class USESlotData;
 
 
@@ -19,40 +20,36 @@ struct FSEBaseRecord
 	FName Name;
 
 
-	FSEBaseRecord() : Name() {}
+	FSEBaseRecord()
+		: Name()
+	{
+	}
 
 	virtual bool Serialize(FArchive& Ar);
+
 	friend FArchive& operator<<(FArchive& Ar, FSEBaseRecord& Record)
 	{
 		Record.Serialize(Ar);
 		return Ar;
 	}
-	virtual ~FSEBaseRecord() {}
+
+	virtual ~FSEBaseRecord()
+	{
+	}
 };
 
-template<>
+template <>
 struct TStructOpsTypeTraits<FSEBaseRecord> : public TStructOpsTypeTraitsBase2<FSEBaseRecord>
-{ enum { WithSerializer = true }; };
+{
+	enum { WithSerializer = true };
+};
 
 FORCEINLINE bool operator==(const FSEBaseRecord& A, const FSEBaseRecord& B) { return A.Name == B.Name; }
 
 
-
-/** Represents a serialized Data */
-USTRUCT()
-struct FSEDataRecord : public FSEBaseRecord
-{
-	GENERATED_BODY()
-
-	TArray<uint8> Data;
-
-	virtual bool Serialize(FArchive& Ar) override;
-};
-
-
 /** Represents a serialized Object */
 USTRUCT()
-struct FSEObjectRecord : public FSEBaseRecord
+struct SAVEEXTENSION_API FSEObjectRecord : public FSEBaseRecord
 {
 	GENERATED_BODY()
 
@@ -63,7 +60,12 @@ struct FSEObjectRecord : public FSEBaseRecord
 	TArray<FName> Tags;
 
 
-	FSEObjectRecord() : Super(), Class(nullptr) {}
+	FSEObjectRecord()
+		: Super()
+		  , Class(nullptr)
+	{
+	}
+
 	FSEObjectRecord(const UObject* Object);
 
 	virtual bool Serialize(FArchive& Ar) override;
@@ -73,16 +75,18 @@ struct FSEObjectRecord : public FSEBaseRecord
 		return !Name.IsNone() && Class && Data.Num() > 0;
 	}
 
-	FORCEINLINE bool operator== (const UObject* Other) const
+	FORCEINLINE bool operator==(const UObject* Other) const
 	{
 		return Other && Name == Other->GetFName() && Class == Other->GetClass();
 	}
+
+	bool operator==(const USESaverBase* Other) const;
 };
 
 
 /** Represents a serialized Component */
 USTRUCT()
-struct FSEComponentRecord : public FSEObjectRecord
+struct SAVEEXTENSION_API FSEComponentRecord : public FSEObjectRecord
 {
 	GENERATED_BODY()
 
@@ -95,7 +99,7 @@ struct FSEComponentRecord : public FSEObjectRecord
 
 /** Represents a serialized Actor */
 USTRUCT()
-struct FSEActorRecord : public FSEObjectRecord
+struct SAVEEXTENSION_API FSEActorRecord : public FSEObjectRecord
 {
 	GENERATED_BODY()
 
@@ -108,11 +112,16 @@ struct FSEActorRecord : public FSEObjectRecord
 	TArray<FSEComponentRecord> ComponentRecords;
 
 
-	FSEActorRecord() : Super() {}
-	FSEActorRecord(const AActor* Actor) : Super(Actor) {}
-	virtual bool Serialize(FArchive& Ar) override;
-	FORCEINLINE bool operator== (const UObject* Other) const
+	FSEActorRecord()
+		: Super()
 	{
-		return Other && Name == Other->GetFName() && Class == Other->GetClass();
 	}
+
+	FSEActorRecord(const AActor* Actor)
+		: Super(Actor)
+	{
+	}
+
+	virtual bool Serialize(FArchive& Ar) override;
+
 };

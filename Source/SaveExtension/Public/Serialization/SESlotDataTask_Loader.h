@@ -29,6 +29,7 @@ enum class ELoadDataTaskState : uint8
 
 /**
 * Manages the loading process of a SaveData file
+* 管理存档数据文件的加载过程。
 */
 UCLASS()
 class USESlotDataTask_Loader : public USESlotDataTask
@@ -43,7 +44,6 @@ class USESlotDataTask_Loader : public USESlotDataTask
 	FOnSEGameLoaded Delegate;
 
 protected:
-
 	// Async variables
 	TWeakObjectPtr<ULevel> CurrentLevel;
 	TWeakObjectPtr<ULevelStreaming> CurrentSLevel;
@@ -59,8 +59,8 @@ protected:
 
 
 public:
-
-	USESlotDataTask_Loader() : Super() {}
+	USESlotDataTask_Loader()
+		: Super() {}
 
 	auto Setup(FName InSlotName)
 	{
@@ -68,12 +68,15 @@ public:
 		return this;
 	}
 
-	auto Bind(const FOnSEGameLoaded& OnLoaded) { Delegate = OnLoaded; return this; }
+	auto Bind(const FOnSEGameLoaded& OnLoaded)
+	{
+		Delegate = OnLoaded;
+		return this;
+	}
 
 	void OnMapLoaded();
 
 private:
-
 	virtual void OnStart() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -86,7 +89,6 @@ private:
 	void RespawnActors(const TArray<FSEActorRecord*>& Records, const ULevel* Level);
 
 protected:
-
 	//~ Begin Files
 	void StartLoadingData();
 
@@ -116,7 +118,6 @@ protected:
 	void FindNextAsyncLevel(ULevelStreaming*& OutLevelStreaming) const;
 
 private:
-
 	/** Deserializes Game Instance Object and its Properties.
 	Requires 'SaveGameMode' flag to be used. */
 	void DeserializeGameInstance();

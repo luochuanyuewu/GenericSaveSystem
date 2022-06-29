@@ -3,9 +3,7 @@
 #include "Serialization/SETask_SerializeActors.h"
 #include "Serialization/MemoryWriter.h"
 #include "Components/PrimitiveComponent.h"
-
 #include "SESaveManager.h"
-#include "SESlotInfo.h"
 #include "SESlotData.h"
 #include "SESavePreset.h"
 #include "Serialization/SEArchive.h"
@@ -15,7 +13,7 @@
 // FMTTask_SerializeActors
 void FSETask_SerializeActors::DoWork()
 {
-	TRACE_CPUPROFILER_EVENT_SCOPE(FMTTask_SerializeActors::DoWork);
+	TRACE_CPUPROFILER_EVENT_SCOPE(FSETask_SerializeActors::DoWork);
 	if (bStoreGameInstance)
 	{
 		SerializeGameInstance();

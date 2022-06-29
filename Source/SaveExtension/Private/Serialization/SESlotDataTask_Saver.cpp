@@ -8,6 +8,7 @@
 #include "SESlotData.h"
 #include "SESavePreset.h"
 #include "SEFileAdapter.h"
+#include "Serialization/SETask_SerializeSavers.h"
 
 
 void USESlotDataTask_Saver::OnStart()
@@ -57,7 +58,7 @@ void USESlotDataTask_Saver::OnStart()
 			SlotInfo->CaptureThumbnail(Width, Height);
 		}
 
-		// Time stats
+		// 开始时间
 		{
 			SlotInfo->SaveDate = FDateTime::Now();
 
@@ -94,6 +95,7 @@ void USESlotDataTask_Saver::OnStart()
 		SlotData->GeneralLevelFilter = Preset->ToFilter();
 
 		SerializeWorld();
+		GetManager()->SaveAllSavers();
 		SaveFile();
 		return;
 	}
@@ -136,10 +138,7 @@ void USESlotDataTask_Saver::OnFinish(bool bSuccess)
 	USESaveManager* Manager = GetManager();
 	check(Manager);
 	Delegate.ExecuteIfBound((Manager && bSuccess) ? Manager->GetCurrentInfo() : nullptr);
-	Manager->OnSaveFinished(
-		SlotData ? GetGeneralFilter() : FSELevelFilter{},
-		!bSuccess
-		);
+	Manager->OnSaveFinished(SlotData ? GetGeneralFilter() : FSELevelFilter{}, !bSuccess);
 }
 
 void USESlotDataTask_Saver::BeginDestroy()
@@ -169,17 +168,17 @@ void USESlotDataTask_Saver::SerializeWorld()
 	const TArray<ULevelStreaming*>& Levels = World->GetStreamingLevels();
 	PrepareAllLevels(Levels);
 
-	// Threads available + 1 (Synchronous Thread)
+	// 可用线程 + 1 个(同步线程)
 	const int32 NumberOfThreads = FMath::Max(1, FPlatformMisc::NumberOfWorkerThreadsToSpawn() + 1);
 	const int32 TasksPerLevel = FMath::Max(1, FMath::RoundToInt(float(NumberOfThreads) / (Levels.Num() + 1)));
 	Tasks.Reserve(NumberOfThreads);
 
-	SerializeLevelSync(World->GetCurrentLevel(), TasksPerLevel);
+	ScheduleTasksForLevel(World->GetCurrentLevel(), TasksPerLevel);
 	for (const ULevelStreaming* Level : Levels)
 	{
 		if (Level->IsLevelLoaded())
 		{
-			SerializeLevelSync(Level->GetLoadedLevel(), TasksPerLevel, Level);
+			ScheduleTasksForLevel(Level->GetLoadedLevel(), TasksPerLevel, Level);
 		}
 	}
 
@@ -200,11 +199,12 @@ void USESlotDataTask_Saver::PrepareAllLevels(const TArray<ULevelStreaming*>& Lev
 	}
 }
 
-void USESlotDataTask_Saver::SerializeLevelSync(const ULevel* Level, int32 AssignedTasks, const ULevelStreaming* StreamingLevel)
+void USESlotDataTask_Saver::ScheduleTasksForLevel(const ULevel* Level, int32 AssignedTasks, const ULevelStreaming* StreamingLevel)
 {
-	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Saver::SerializeLevelSync);
+	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Saver::BuildSerializeTasksForLevel);
 	check(IsValid(Level));
 
+	//如果没开启多线程，那么只需要分配1个任务.
 	if (!Preset->IsMTSerializationSave())
 	{
 		AssignedTasks = 1;
@@ -228,33 +228,59 @@ void USESlotDataTask_Saver::SerializeLevelSync(const ULevel* Level, int32 Assign
 
 	const int32 MinObjectsPerTask = 40;
 	const int32 ActorCount = Level->Actors.Num();
-	const int32 NumBalancedPerTask = FMath::CeilToInt((float) ActorCount / AssignedTasks);
+	const int32 NumBalancedPerTask = FMath::CeilToInt((float)ActorCount / AssignedTasks);
 	const int32 NumPerTask = FMath::Max(NumBalancedPerTask, MinObjectsPerTask);
 
 	// Split all actors between multi-threaded tasks
+	// 根据Actor数量，创建出多个Task，每个Task负责序列化一些Actor。
 	int32 Index = 0;
 	while (Index < ActorCount)
 	{
+		//
 		const int32 NumRemaining = ActorCount - Index;
+		//算出此任务序列化多少个Actor.
 		const int32 NumToSerialize = FMath::Min(NumRemaining, NumPerTask);
 
-		// First task saves the GameInstance
+		// 第一个Task是否保存GameInstance.
 		bool bStoreGameInstance = Index <= 0 && SlotData->bStoreGameInstance;
-		// Add new Task
+		// 添加新的异步任务,只是添加了，但是还没开始。
 		Tasks.Emplace(FSETask_SerializeActors
-		{
-			GetWorld(), SlotData, &Level->Actors, Index, NumToSerialize,
-			bStoreGameInstance, LevelRecord, Filter
-		});
+			{
+				GetWorld(), SlotData, &Level->Actors, Index, NumToSerialize,
+				bStoreGameInstance, LevelRecord, Filter
+			});
 
 		Index += NumToSerialize;
 	}
 }
+//
+// void USESlotDataTask_Saver::CreateSaveSaversTask()
+// {
+// 	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Saver::ScheduleTasksForSavers);
+// 	USESaveManager* Manager = GetManager();
+// 	SaverTask = new FAsyncTask<FSETask_SerializeSavers>(
+// 		GetWorld(), SlotData, Manager->GetSavers(), SlotData
+// 	);
+//
+// 	if (Preset->IsMTSerializationSave())
+// 	{
+// 		SaverTask->StartBackgroundTask();
+// 	}
+// 	else
+// 	{
+// 		SaverTask->StartSynchronousTask();
+//
+// 		if (!bSaveThumbnail)
+// 		{
+// 			Finish(true);
+// 		}
+// 	}
+// }
 
 void USESlotDataTask_Saver::RunScheduledTasks()
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Saver::RunScheduledTasks);
-	// Start all serialization tasks
+	// 开始所有的序列化任务。
 	if (Tasks.Num() > 0)
 	{
 		for (int32 I = 1; I < Tasks.Num(); ++I)
@@ -264,19 +290,22 @@ void USESlotDataTask_Saver::RunScheduledTasks()
 			else
 				Tasks[I].StartSynchronousTask();
 		}
-		// First task stores
+		// 不管第一个任务是否保存GameInstance，
 		Tasks[0].StartSynchronousTask();
 	}
-	// Wait until all tasks have finished
-	for (auto& AsyncTask : Tasks)
+	// 一直等待直到所有的Task完成。
+	for (FAsyncTask<FSETask_SerializeActors>& AsyncTask : Tasks)
 	{
 		AsyncTask.EnsureCompletion();
 	}
-	// All tasks finished, sync data
-	for (auto& AsyncTask : Tasks)
+	// SaverTask->EnsureCompletion();
+	// 所有Task完成后，同步数据。
+	for (FAsyncTask<FSETask_SerializeActors>& AsyncTask : Tasks)
 	{
 		AsyncTask.GetTask().DumpData();
 	}
+	// SaverTask->GetTask().DumpData();
+	// delete SaverTask;
 	Tasks.Empty();
 }
 

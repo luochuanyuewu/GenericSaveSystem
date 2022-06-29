@@ -21,7 +21,7 @@ namespace Loader
 {
 	static int32 RemoveSingleRecordPtrSwap(TArray<FSEActorRecord*>& Records, AActor* Actor, bool bAllowShrinking = true)
 	{
-		if(!Actor)
+		if (!Actor)
 		{
 			return 0;
 		}
@@ -65,7 +65,7 @@ void USESlotDataTask_Loader::OnStart()
 
 	// Cross-Level loading
 	// TODO: Handle empty Map as empty world
-	FName CurrentMapName { FSESlotHelpers::GetWorldName(World) };
+	FName CurrentMapName{FSESlotHelpers::GetWorldName(World)};
 	if (CurrentMapName != NewSlotInfo->Map)
 	{
 		LoadState = ELoadDataTaskState::LoadingMap;
@@ -77,12 +77,14 @@ void USESlotDataTask_Loader::OnStart()
 			return;
 		}
 
-		UGameplayStatics::OpenLevel(this, FName{ MapToOpen });
+		UGameplayStatics::OpenLevel(this, FName{MapToOpen});
+		// 这个关卡如果加载完毕，会让SaveManager知道，SaveManager会让这个Task知道（OnMapLoaded），从而推进到下一个阶段。
 
 		SELog(Preset, "Slot '" + SlotName.ToString() + "' is recorded on another Map. Loading before charging slot.", FColor::White, false, 1);
+
 		return;
 	}
-	else if (IsDataLoaded())
+	else if (IsDataLoaded()) //LoadDataTask 为同步加载时，这里才会马上为真.
 	{
 		StartDeserialization();
 	}
@@ -95,7 +97,7 @@ void USESlotDataTask_Loader::OnStart()
 void USESlotDataTask_Loader::Tick(float DeltaTime)
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Loader::Tick);
-	switch(LoadState)
+	switch (LoadState)
 	{
 	case ELoadDataTaskState::Deserializing:
 		if (CurrentLevel.IsValid())
@@ -124,7 +126,7 @@ void USESlotDataTask_Loader::OnFinish(bool bSuccess)
 	Delegate.ExecuteIfBound((bSuccess) ? NewSlotInfo : nullptr);
 
 	GetManager()->OnLoadFinished(
-		SlotData? GetGeneralFilter() : FSELevelFilter{},
+		SlotData ? GetGeneralFilter() : FSELevelFilter{},
 		!bSuccess
 	);
 }
@@ -142,21 +144,21 @@ void USESlotDataTask_Loader::BeginDestroy()
 
 void USESlotDataTask_Loader::OnMapLoaded()
 {
-	if(LoadState != ELoadDataTaskState::LoadingMap)
+	if (LoadState != ELoadDataTaskState::LoadingMap)
 	{
 		return;
 	}
 
 	const UWorld* World = GetWorld();
-	if(!World)
+	if (!World)
 	{
 		UE_LOG(LogSaveExtension, Warning, TEXT("Failed loading map from saved slot."));
 		Finish(false);
 	}
-	const FName NewMapName { FSESlotHelpers::GetWorldName(World) };
+	const FName NewMapName{FSESlotHelpers::GetWorldName(World)};
 	if (NewMapName == NewSlotInfo->Map)
 	{
-		if(IsDataLoaded())
+		if (IsDataLoaded())
 		{
 			StartDeserialization();
 		}
@@ -256,6 +258,10 @@ void USESlotDataTask_Loader::DeserializeSync()
 		}
 	}
 
+	// Deserialize Savers
+	{
+	}
+
 	FinishedDeserializing();
 }
 
@@ -303,7 +309,8 @@ void USESlotDataTask_Loader::DeserializeLevelASync(ULevel* Level, ULevelStreamin
 	SELog(Preset, "Level '" + LevelName.ToString() + "'", FColor::Green, false, 1);
 
 	FSELevelRecord* LevelRecord = FindLevelRecord(StreamingLevel);
-	if (!LevelRecord) {
+	if (!LevelRecord)
+	{
 		Finish(false);
 		return;
 	}
@@ -318,7 +325,7 @@ void USESlotDataTask_Loader::DeserializeLevelASync(ULevel* Level, ULevelStreamin
 	CurrentLevelActors.Empty(Level->Actors.Num());
 	for (auto* Actor : Level->Actors)
 	{
-		if(IsValid(Actor))
+		if (IsValid(Actor))
 		{
 			CurrentLevelActors.Add(Actor);
 		}
@@ -329,7 +336,7 @@ void USESlotDataTask_Loader::DeserializeLevelASync(ULevel* Level, ULevelStreamin
 
 void USESlotDataTask_Loader::DeserializeASyncLoop(float StartMS)
 {
-	FSELevelRecord * LevelRecord = FindLevelRecord(CurrentSLevel.Get());
+	FSELevelRecord* LevelRecord = FindLevelRecord(CurrentSLevel.Get());
 	if (!LevelRecord)
 	{
 		return;
@@ -337,7 +344,7 @@ void USESlotDataTask_Loader::DeserializeASyncLoop(float StartMS)
 
 	const auto& Filter = GetLevelFilter(*LevelRecord);
 
-	if(StartMS <= 0)
+	if (StartMS <= 0)
 	{
 		StartMS = GetTimeMilliseconds();
 	}
@@ -345,7 +352,7 @@ void USESlotDataTask_Loader::DeserializeASyncLoop(float StartMS)
 	// Continue Iterating actors every tick
 	for (; CurrentActorIndex < CurrentLevelActors.Num(); ++CurrentActorIndex)
 	{
-		AActor* const Actor{ CurrentLevelActors[CurrentActorIndex].Get() };
+		AActor* const Actor{CurrentLevelActors[CurrentActorIndex].Get()};
 		if (IsValid(Actor) && Filter.ShouldSave(Actor))
 		{
 			DeserializeLevel_Actor(Actor, *LevelRecord, Filter);
@@ -389,7 +396,7 @@ void USESlotDataTask_Loader::PrepareLevel(const ULevel* Level, FSELevelRecord& L
 
 	TArray<FSEActorRecord*> ActorsToSpawn;
 	ActorsToSpawn.Reserve(LevelRecord.Actors.Num());
-	for(FSEActorRecord& Record : LevelRecord.Actors)
+	for (FSEActorRecord& Record : LevelRecord.Actors)
 	{
 		ActorsToSpawn.Add(&Record);
 	}
@@ -423,7 +430,8 @@ void USESlotDataTask_Loader::FinishedDeserializing()
 	// Clean serialization data
 	SlotData->CleanRecords(true);
 	GetManager()->__SetCurrentData(SlotData);
-
+	USESaveManager* Manager = GetManager();
+	Manager->LoadAllSavers();
 	Finish(true);
 }
 

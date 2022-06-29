@@ -6,7 +6,7 @@
 
 
 /** Serializes world data */
-struct FSEArchive : public FObjectAndNameAsStringProxyArchive
+struct SAVEEXTENSION_API FSEArchive : public FObjectAndNameAsStringProxyArchive
 {
 public:
 

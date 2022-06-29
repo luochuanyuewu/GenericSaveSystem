@@ -28,7 +28,7 @@ class FSaveSpec_Preset : public Automatron::FTestSpec
 	void TickUntilSaveTasksFinish()
 	{
 		TickWorldUntil(GetMainWorld(), true, [this](float) {
-			return SaveManager->HasTasks();
+			return SaveManager->HasSlotDataTasks();
 		});
 	}
 };

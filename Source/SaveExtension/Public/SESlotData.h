@@ -5,7 +5,7 @@
 
 #include "ISaveExtension.h"
 
- #include "CoreMinimal.h"
+#include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 
 #include "Serialization/SERecords.h"
@@ -25,8 +25,9 @@ class SAVEEXTENSION_API USESlotData : public USaveGame
 	GENERATED_BODY()
 
 public:
-
-	USESlotData() : Super() {}
+	USESlotData() : Super()
+	{
+	}
 
 
 	/** Full Name of the Map where this SlotData was saved */
@@ -48,6 +49,9 @@ public:
 	FSEPersistentLevelRecord MainLevel;
 	TArray<FSEStreamingLevelRecord> SubLevels;
 
+	bool FindSaverRecord(const FName& Name, FSEObjectRecord*& Record);
+
+	TArray<FSEObjectRecord> SaverRecords;
 
 	void CleanRecords(bool bKeepSublevels);
 

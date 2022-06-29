@@ -26,10 +26,24 @@ void USESlotData::Serialize(FArchive& Ar)
 	Ar << bStoreGameInstance;
 	Ar << GameInstance;
 
-	static UScriptStruct* const LevelFilterType{ FSELevelFilter::StaticStruct() };
+	static UScriptStruct* const LevelFilterType{FSELevelFilter::StaticStruct()};
 	LevelFilterType->SerializeItem(Ar, &GeneralLevelFilter, nullptr);
 	MainLevel.Serialize(Ar);
 	Ar << SubLevels;
+	Ar << SaverRecords;
+}
+
+bool USESlotData::FindSaverRecord(const FName& Name, FSEObjectRecord*& Record)
+{
+	for (auto& SaverRecord : SaverRecords)
+	{
+		if (SaverRecord.Name.IsEqual(Name))
+		{
+			Record = &SaverRecord;
+			return true;
+		}
+	}
+	return false;
 }
 
 void USESlotData::CleanRecords(bool bKeepSublevels)

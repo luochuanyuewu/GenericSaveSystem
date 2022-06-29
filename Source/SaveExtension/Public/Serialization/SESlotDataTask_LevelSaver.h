@@ -12,6 +12,7 @@
 
 /**
 * Manages the serializing process of a single level
+* 管理一个流送关卡的序列化过程。
 */
 UCLASS()
 class USESlotDataTask_LevelSaver : public USESlotDataTask_Saver
@@ -23,7 +24,6 @@ class USESlotDataTask_LevelSaver : public USESlotDataTask_Saver
 	ULevelStreaming* StreamingLevel;
 
 public:
-
 	auto Setup(ULevelStreaming* InStreamingLevel)
 	{
 		StreamingLevel = InStreamingLevel;
@@ -31,9 +31,10 @@ public:
 	}
 
 private:
-
 	virtual void OnStart() override;
-	virtual void OnFinish(bool bSuccess) override  {
+
+	virtual void OnFinish(bool bSuccess) override
+	{
 		SELog(Preset, "Finished Serializing level", FColor::Green);
 	}
 };

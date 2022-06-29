@@ -17,7 +17,8 @@ class USESaveManager;
 
 
 /**
-* Base class for managing a SaveData file
+* @brief Base class for managing a SaveData file.管理一个存档数据文件的基类
+* @attention SlotDataTask对象由SaveManager管理，且都在主线程操作，其内部会管理各种异步Task。
 */
 UCLASS()
 class USESlotDataTask : public UObject
@@ -25,13 +26,11 @@ class USESlotDataTask : public UObject
 	GENERATED_BODY()
 
 private:
-
 	uint8 bRunning : 1;
 	uint8 bFinished : 1;
 	uint8 bSucceeded : 1;
 
 protected:
-
 	UPROPERTY()
 	USESlotData* SlotData;
 
@@ -42,8 +41,10 @@ protected:
 	float MaxFrameMs = 0.f;
 
 public:
-
-	USESlotDataTask() : Super(), bRunning(false), bFinished(false) {}
+	USESlotDataTask()
+		: Super()
+		, bRunning(false)
+		, bFinished(false) {}
 
 	void Prepare(USESlotData* InSaveData, const USESavePreset& InPreset)
 	{
@@ -67,7 +68,6 @@ public:
 	virtual void OnTick(float DeltaTime) {}
 
 protected:
-
 	virtual void OnStart() {}
 
 	virtual void OnFinish(bool bSuccess) {}
@@ -85,7 +85,8 @@ protected:
 	virtual UWorld* GetWorld() const override;
 	//~ End UObject Interface
 
-	FORCEINLINE float GetTimeMilliseconds() const {
+	FORCEINLINE float GetTimeMilliseconds() const
+	{
 		return FPlatformTime::ToMilliseconds(FPlatformTime::Cycles());
 	}
 };
@@ -94,9 +95,9 @@ protected:
 /////////////////////////////////////////////////////
 // FSlotDataActorsTask
 // Async task to serialize actors from a level.
-class FSESlotDataActorsTask : public FNonAbandonableTask {
+class FSESlotDataActorsTask : public FNonAbandonableTask
+{
 protected:
-
 	const bool bIsSync;
 	/** USE ONLY IF SYNC */
 	const UWorld* const World;
@@ -106,10 +107,9 @@ protected:
 	const FSELevelFilter& Filter;
 
 
-	FSESlotDataActorsTask(const bool bInIsSync, const UWorld* InWorld, USESlotData* InSlotData, const FSELevelFilter& Filter) :
-		bIsSync(bInIsSync),
-		World(InWorld),
-		SlotData(InSlotData),
-		Filter(Filter)
-	{}
+	FSESlotDataActorsTask(const bool bInIsSync, const UWorld* InWorld, USESlotData* InSlotData, const FSELevelFilter& Filter)
+		: bIsSync(bInIsSync)
+		, World(InWorld)
+		, SlotData(InSlotData)
+		, Filter(Filter) {}
 };

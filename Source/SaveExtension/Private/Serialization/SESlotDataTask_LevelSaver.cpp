@@ -20,7 +20,7 @@ void USESlotDataTask_LevelSaver::OnStart()
 		GetLevelFilter(*LevelRecord).BakeAllowedClasses();
 
 		const int32 NumberOfThreads = FMath::Max(1, FPlatformMisc::NumberOfWorkerThreadsToSpawn());
-		SerializeLevelSync(StreamingLevel->GetLoadedLevel(), NumberOfThreads, StreamingLevel);
+		ScheduleTasksForLevel(StreamingLevel->GetLoadedLevel(), NumberOfThreads, StreamingLevel);
 
 		RunScheduledTasks();
 

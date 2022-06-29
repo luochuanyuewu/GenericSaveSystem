@@ -14,7 +14,7 @@ USESlotDataTask* USESlotDataTask::Start()
 	const USESaveManager* Manager = GetManager();
 
 	// If not running and first task is this
-	if (!bRunning && Manager->Tasks.Num() > 0 && Manager->Tasks[0] == this)
+	if (!bRunning && Manager->SlotDataTasks.Num() > 0 && Manager->SlotDataTasks[0] == this)
 	{
 		bRunning = true;
 		OnStart();
@@ -28,7 +28,7 @@ void USESlotDataTask::Finish(bool bSuccess)
 	{
 		OnFinish(bSuccess);
 		MarkAsGarbage();
-		GetManager()->FinishTask(this);
+		GetManager()->FinishSlotDataTask(this);
 		bFinished = true;
 		bSucceeded = bSuccess;
 	}
@@ -36,7 +36,7 @@ void USESlotDataTask::Finish(bool bSuccess)
 
 bool USESlotDataTask::IsScheduled() const
 {
-	return GetManager()->Tasks.Contains(this);
+	return GetManager()->SlotDataTasks.Contains(this);
 }
 
 USESaveManager* USESlotDataTask::GetManager() const

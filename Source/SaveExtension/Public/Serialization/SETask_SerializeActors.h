@@ -12,15 +12,15 @@
 
 class USESlotData;
 
-/** Called when game has been saved
- * @param SlotInfo the saved slot. Null if save failed
- */
-DECLARE_DELEGATE_OneParam(FOnSEGameSaved, USESlotInfo*);
+// /** Called when game has been saved
+//  * @param SlotInfo the saved slot. Null if save failed
+//  */
+// DECLARE_DELEGATE_OneParam(FOnSEGameSaved, USESlotInfo*);
 
 
 /////////////////////////////////////////////////////
-// FMTTask_SerializeActors
-// Async task to serialize actors from a level.
+// FSETask_SerializeActors
+// 序列化一个关卡中所有Actor的异步任务。
 class FSETask_SerializeActors : public FSETask
 {
 	const TArray<AActor*>* const LevelActors;
@@ -37,16 +37,16 @@ class FSETask_SerializeActors : public FSETask
 
 public:
 	FSETask_SerializeActors(const UWorld* World, USESlotData* SlotData,
-		const TArray<AActor*>* const InLevelActors, const int32 InStartIndex, const int32 InNum, bool bStoreGameInstance,
-		FSELevelRecord* InLevelRecord, const FSELevelFilter& Filter)
+	                        const TArray<AActor*>* const InLevelActors, const int32 InStartIndex, const int32 InNum, bool bStoreGameInstance,
+	                        FSELevelRecord* InLevelRecord, const FSELevelFilter& Filter)
 		: FSETask(false, World, SlotData, Filter)
-		, LevelActors(InLevelActors)
-		, StartIndex(InStartIndex)
-		, Num(InNum)
-		, bStoreGameInstance(bStoreGameInstance)
-		, LevelRecord(InLevelRecord)
-		, LevelScriptRecord{}
-		, ActorRecords{}
+		  , LevelActors(InLevelActors)
+		  , StartIndex(InStartIndex)
+		  , Num(InNum)
+		  , bStoreGameInstance(bStoreGameInstance)
+		  , LevelRecord(InLevelRecord)
+		  , LevelScriptRecord{}
+		  , ActorRecords{}
 	{
 		// No apparent performance benefit
 		// ActorRecords.Reserve(Num);
@@ -55,7 +55,8 @@ public:
 	void DoWork();
 
 	/** Called after task has completed to recover resulting information */
-	void DumpData() {
+	void DumpData()
+	{
 		if (LevelScriptRecord.IsValid())
 			LevelRecord->LevelScript = LevelScriptRecord;
 
@@ -65,11 +66,10 @@ public:
 
 	FORCEINLINE TStatId GetStatId() const
 	{
-		RETURN_QUICK_DECLARE_CYCLE_STAT(FMTTask_SerializeActors, STATGROUP_ThreadPoolAsyncTasks);
+		RETURN_QUICK_DECLARE_CYCLE_STAT(FSETask_SerializeActors, STATGROUP_ThreadPoolAsyncTasks);
 	}
 
 private:
-
 	void SerializeGameInstance();
 
 	/** Serializes an actor into this Actor Record */
