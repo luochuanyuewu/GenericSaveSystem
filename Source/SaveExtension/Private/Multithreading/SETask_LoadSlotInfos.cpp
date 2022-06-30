@@ -42,10 +42,15 @@ void FSETask_LoadSlotInfos::DoWork()
 	}
 
 	// For cache friendlyness, we deserialize infos after loading all the files
-	LoadedSlots.Reserve(LoadedFiles.Num());
+	// LoadedSlots.Reserve(LoadedFiles.Num());
+	LoadedSlots.Empty();
 	for (const auto& File : LoadedFiles)
 	{
-		LoadedSlots.Add(File.CreateAndDeserializeInfo(Manager));
+		USESlotInfo* Info = File.CreateAndDeserializeInfo(Manager);
+		if (Info != nullptr)
+		{
+			LoadedSlots.Add(Info);
+		}
 	}
 
 	if (!bLoadingSingleInfo && bSortByRecent)

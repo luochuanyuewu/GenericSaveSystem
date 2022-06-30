@@ -330,6 +330,7 @@ void FSEFileAdapter::DeserializeObject(UObject*& Object, FStringView ClassName, 
 	{
 		FMemoryReader Reader{ Bytes };
 		FObjectAndNameAsStringProxyArchive Ar(Reader, true);
+		Ar.bLoadIfFindFails = false;
 		Object->Serialize(Ar);
 	}
 }
