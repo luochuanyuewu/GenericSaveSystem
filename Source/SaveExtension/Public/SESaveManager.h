@@ -180,7 +180,7 @@ public:
 	/**
 	 * Find all saved games and return their SlotInfos
 	 * @param bSortByRecent Should slots be ordered by save date?
-	 * @param SaveInfos All saved games found on disk
+	 * @param Delegate Callback
 	 */
 	void LoadAllSlotInfos(bool bSortByRecent, FOnSESlotInfosLoaded Delegate);
 	void LoadAllSlotInfosSync(bool bSortByRecent, FOnSESlotInfosLoaded Delegate);
@@ -387,9 +387,6 @@ protected:
 	//~ End UObject Interface
 
 #pragma region Events
-	/***********************************************************************/
-	/* EVENTS                                                              */
-	/***********************************************************************/
 public:
 	UPROPERTY(BlueprintAssignable, Category = SaveExtension)
 	FOnGameSavedMC OnGameSaved;
@@ -419,6 +416,19 @@ private:
 	void IterateSavers(TFunction<void(UObject*)>&& Callback);
 
 #pragma endregion Events
+
+#pragma region CMD
+protected:
+	void RegisterCmds();
+	void UnregisterCmds();
+	void CmdLoadSlot(const TArray<FString>& Args);
+	void CmdSaveSlot(const TArray<FString>& Args);
+private:
+#if !UE_BUILD_SHIPPING
+	IConsoleCommand* SaveSlotCmd;
+	IConsoleCommand* LoadSlotCmd;
+#endif
+#pragma endregion CMD
 };
 
 

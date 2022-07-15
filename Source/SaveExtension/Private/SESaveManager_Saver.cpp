@@ -2,7 +2,6 @@
 
 
 #include "SESaveManager.h"
-#include "Saver/SESaverSlotData.h"
 
 
 void USESaveManager::RegisterSaver(USESaverBase* Saver)
@@ -87,16 +86,6 @@ void USESaveManager::IterateSavers(TFunction<void(UObject*)>&& Callback)
 	{
 		Callback(Saver);
 	}
-}
-
-USESaveManager* USESaveManager::Get(const UObject* ContextObject)
-{
-	UWorld* World = GEngine->GetWorldFromContextObject(ContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	if (World)
-	{
-		return UGameInstance::GetSubsystem<USESaveManager>(World->GetGameInstance());
-	}
-	return nullptr;
 }
 
 

@@ -4,7 +4,6 @@
 #include "Saver/SESaverBase.h"
 
 #include "SESaveManager.h"
-#include "Saver/SESaverSlotData.h"
 
 
 // Sets default values for this component's properties

@@ -44,6 +44,7 @@ void USESaveManager::Initialize(FSubsystemCollectionBase& Collection)
 
 	TryInstantiateInfo();
 	UpdateLevelStreamings();
+	RegisterCmds();
 }
 
 void USESaveManager::Deinitialize()
@@ -58,7 +59,19 @@ void USESaveManager::Deinitialize()
 	FCoreUObjectDelegates::PreLoadMap.RemoveAll(this);
 	FCoreUObjectDelegates::PostLoadMapWithWorld.RemoveAll(this);
 	FGameDelegates::Get().GetEndPlayMapDelegate().RemoveAll(this);
+	UnregisterCmds();
 }
+
+USESaveManager* USESaveManager::Get(const UObject* ContextObject)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(ContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (World)
+	{
+		return UGameInstance::GetSubsystem<USESaveManager>(World->GetGameInstance());
+	}
+	return nullptr;
+}
+
 
 bool USESaveManager::SaveSlot(FName SlotName, bool bOverrideIfNeeded, bool bScreenshot, const FSEScreenshotSize Size, FOnSEGameSaved OnSaved)
 {
