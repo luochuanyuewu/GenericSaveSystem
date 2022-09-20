@@ -137,9 +137,8 @@ void USESaverBase::UninitializeComponent()
 }
 
 
-void USESaverBase::BeginPlay()
+void USESaverBase::TryLoadOnBeginPlay()
 {
-	Super::BeginPlay();
 	if (USESaveManager* Manager = GetSaveManager())
 	{
 		Manager->RegisterSaver(this);
@@ -152,9 +151,14 @@ void USESaverBase::BeginPlay()
 	}
 }
 
-void USESaverBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void USESaverBase::BeginPlay()
 {
-	Super::EndPlay(EndPlayReason);
+	Super::BeginPlay();
+	TryLoadOnBeginPlay();
+}
+
+void USESaverBase::TrySaveOnEndplay()
+{
 	if (USESaveManager* Manager = GetSaveManager())
 	{
 		if (bSaveOnEndPlay)
@@ -162,6 +166,12 @@ void USESaverBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		// if (!Manager->IsLoading()) { Finish.Broadcast(); }
 		Manager->UnregisterSaver(this);
 	}
+}
+
+void USESaverBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	TrySaveOnEndplay();
 }
 
 USESaveManager* USESaverBase::GetSaveManager()

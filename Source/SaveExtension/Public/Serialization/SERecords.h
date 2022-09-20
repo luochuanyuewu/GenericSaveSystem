@@ -13,7 +13,7 @@ class USESlotData;
 
 
 USTRUCT()
-struct FSEBaseRecord
+struct SAVEEXTENSION_API FSEBaseRecord
 {
 	GENERATED_BODY()
 

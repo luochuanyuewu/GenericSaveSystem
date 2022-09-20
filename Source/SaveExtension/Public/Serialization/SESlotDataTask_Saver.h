@@ -40,16 +40,8 @@ protected:
 	UPROPERTY()
 	USESlotInfo* SlotInfo;
 
-	// /** Start Async variables */
-	// TWeakObjectPtr<ULevel> CurrentLevel;
-	// TWeakObjectPtr<ULevelStreaming> CurrentSLevel;
-	// int32 CurrentActorIndex;
-	// TArray<TWeakObjectPtr<AActor>> CurrentLevelActors;
-	// /** End Async variables */
-
 	/** Begin AsyncTasks */
 	TArray<FAsyncTask<FSETask_SerializeActors>> Tasks;
-	// FAsyncTask<FSETask_SerializeSavers>* SaverTask;
 	FAsyncTask<FSETask_SaveFile>* SaveTask;
 	/** End AsyncTasks */
 

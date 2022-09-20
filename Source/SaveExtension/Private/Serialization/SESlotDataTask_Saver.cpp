@@ -253,29 +253,6 @@ void USESlotDataTask_Saver::ScheduleTasksForLevel(const ULevel* Level, int32 Ass
 		Index += NumToSerialize;
 	}
 }
-//
-// void USESlotDataTask_Saver::CreateSaveSaversTask()
-// {
-// 	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Saver::ScheduleTasksForSavers);
-// 	USESaveManager* Manager = GetManager();
-// 	SaverTask = new FAsyncTask<FSETask_SerializeSavers>(
-// 		GetWorld(), SlotData, Manager->GetSavers(), SlotData
-// 	);
-//
-// 	if (Preset->IsMTSerializationSave())
-// 	{
-// 		SaverTask->StartBackgroundTask();
-// 	}
-// 	else
-// 	{
-// 		SaverTask->StartSynchronousTask();
-//
-// 		if (!bSaveThumbnail)
-// 		{
-// 			Finish(true);
-// 		}
-// 	}
-// }
 
 void USESlotDataTask_Saver::RunScheduledTasks()
 {
@@ -298,14 +275,11 @@ void USESlotDataTask_Saver::RunScheduledTasks()
 	{
 		AsyncTask.EnsureCompletion();
 	}
-	// SaverTask->EnsureCompletion();
 	// 所有Task完成后，同步数据。
 	for (FAsyncTask<FSETask_SerializeActors>& AsyncTask : Tasks)
 	{
 		AsyncTask.GetTask().DumpData();
 	}
-	// SaverTask->GetTask().DumpData();
-	// delete SaverTask;
 	Tasks.Empty();
 }
 

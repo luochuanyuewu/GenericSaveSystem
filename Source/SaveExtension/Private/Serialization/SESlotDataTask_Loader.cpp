@@ -389,10 +389,9 @@ void USESlotDataTask_Loader::PrepareLevel(const ULevel* Level, FSELevelRecord& L
 
 	const auto& Filter = GetLevelFilter(LevelRecord);
 
-
-	// Records not contained in Scene Actors		 => Actors to be Respawned
-	// Scene Actors not contained in loaded records  => Actors to be Destroyed
-	// The rest									     => Just deserialize
+	// 场景里没有，但是Records里有的Actor					=> 重新生成
+	// 场景里有，但是Records没有的Actor						=> 重新销毁
+	// 剩下的									     => 直接还原数据。
 
 	TArray<FSEActorRecord*> ActorsToSpawn;
 	ActorsToSpawn.Reserve(LevelRecord.Actors.Num());
@@ -421,7 +420,7 @@ void USESlotDataTask_Loader::PrepareLevel(const ULevel* Level, FSELevelRecord& L
 		ActorsToSpawn.Shrink();
 	}
 
-	// Create Actors that doesn't exist now but were saved
+	// 重新创建存档里有但是当前却不存在的Actor.
 	RespawnActors(ActorsToSpawn, Level);
 }
 

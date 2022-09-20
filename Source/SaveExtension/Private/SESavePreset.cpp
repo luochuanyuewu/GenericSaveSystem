@@ -10,7 +10,7 @@
 USESavePreset::USESavePreset()
 	: Super()
 	, SlotInfoClass(USESlotInfo::StaticClass())
-	, SlotDataClass(USESlotData::StaticClass())
+	// , SlotDataClass(USESlotData::StaticClass())
 {}
 
 void USESavePreset::BPGetSlotNameFromId_Implementation(int32 Id, FName& Name) const

@@ -68,8 +68,12 @@ protected:
 	// Called when the game starts
 	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
+	UFUNCTION()
+	virtual void TrySaveOnEndplay();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void UninitializeComponent() override;
+	UFUNCTION()
+	virtual void TryLoadOnBeginPlay();
 
 	USESaveManager* GetSaveManager();
 
