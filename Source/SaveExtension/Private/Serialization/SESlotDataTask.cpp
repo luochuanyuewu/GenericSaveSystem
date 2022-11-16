@@ -44,39 +44,6 @@ USESaveManager* USESlotDataTask::GetManager() const
 	return Cast<USESaveManager>(GetOuter());
 }
 
-void USESlotDataTask::BakeAllFilters()
-{
-	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask::BakeAllFilters);
-	SlotData->GeneralLevelFilter.BakeAllowedClasses();
-
-	if(SlotData->MainLevel.bOverrideGeneralFilter)
-	{
-		SlotData->MainLevel.Filter.BakeAllowedClasses();
-	}
-
-	for(const auto& Level : SlotData->SubLevels)
-	{
-		if(Level.bOverrideGeneralFilter)
-		{
-			Level.Filter.BakeAllowedClasses();
-		}
-	}
-}
-
-const FSELevelFilter& USESlotDataTask::GetGeneralFilter() const
-{
-	check(SlotData);
-	return SlotData->GeneralLevelFilter;
-}
-
-const FSELevelFilter& USESlotDataTask::GetLevelFilter(const FSELevelRecord& Level) const
-{
-	if(Level.bOverrideGeneralFilter)
-	{
-		return Level.Filter;
-	}
-	return GetGeneralFilter();
-}
 
 FSELevelRecord* USESlotDataTask::FindLevelRecord(const ULevelStreaming* Level) const
 {

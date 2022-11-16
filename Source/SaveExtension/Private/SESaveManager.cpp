@@ -627,59 +627,37 @@ void USESaveManager::UnsubscribeFromEvents(const TScriptInterface<ISESaveInterfa
 	SubscribedInterfaces.Remove(Interface);
 }
 
-void USESaveManager::OnSaveBegan(const FSELevelFilter& Filter)
+void USESaveManager::OnSaveBegan()
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USaveManager::OnSaveBegan);
 
-	IterateSubscribedInterfaces([&Filter](auto* Object)
+	IterateSubscribedInterfaces([](auto* Object)
 	{
 		check(Object->template Implements<USESaveInterface>());
 
 		// C++ event
 		if (ISESaveInterface* Interface = Cast<ISESaveInterface>(Object))
 		{
-			Interface->OnSaveBegan(Filter);
+			Interface->OnSaveBegan();
 		}
-		ISESaveInterface::Execute_ReceiveOnSaveBegan(Object, Filter);
-	});
-	IterateSavers([&Filter](auto* Object)
-	{
-		check(Object->template Implements<USESaveInterface>());
-
-		// C++ event
-		if (ISESaveInterface* Interface = Cast<ISESaveInterface>(Object))
-		{
-			Interface->OnSaveBegan(Filter);
-		}
-		ISESaveInterface::Execute_ReceiveOnSaveBegan(Object, Filter);
+		ISESaveInterface::Execute_ReceiveOnSaveBegan(Object);
 	});
 }
 
-void USESaveManager::OnSaveFinished(const FSELevelFilter& Filter, const bool bError)
+void USESaveManager::OnSaveFinished(const bool bError)
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USaveManager::OnSaveFinished);
 
-	IterateSubscribedInterfaces([&Filter, bError](auto* Object)
+	IterateSubscribedInterfaces([ bError](auto* Object)
 	{
 		check(Object->template Implements<USESaveInterface>());
 
 		// C++ event
 		if (ISESaveInterface* Interface = Cast<ISESaveInterface>(Object))
 		{
-			Interface->OnSaveFinished(Filter, bError);
+			Interface->OnSaveFinished(bError);
 		}
-		ISESaveInterface::Execute_ReceiveOnSaveFinished(Object, Filter, bError);
-	});
-	IterateSavers([&Filter, bError](auto* Object)
-	{
-		check(Object->template Implements<USESaveInterface>());
-
-		// C++ event
-		if (ISESaveInterface* Interface = Cast<ISESaveInterface>(Object))
-		{
-			Interface->OnSaveFinished(Filter, bError);
-		}
-		ISESaveInterface::Execute_ReceiveOnSaveFinished(Object, Filter, bError);
+		ISESaveInterface::Execute_ReceiveOnSaveFinished(Object, bError);
 	});
 
 	if (!bError)
@@ -688,49 +666,37 @@ void USESaveManager::OnSaveFinished(const FSELevelFilter& Filter, const bool bEr
 	}
 }
 
-void USESaveManager::OnLoadBegan(const FSELevelFilter& Filter)
+void USESaveManager::OnLoadBegan()
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USaveManager::OnLoadBegan);
 
-	IterateSubscribedInterfaces([&Filter](auto* Object)
+	IterateSubscribedInterfaces([](auto* Object)
 	{
 		check(Object->template Implements<USESaveInterface>());
 
 		// C++ event
 		if (ISESaveInterface* Interface = Cast<ISESaveInterface>(Object))
 		{
-			Interface->OnLoadBegan(Filter);
+			Interface->OnLoadBegan();
 		}
-		ISESaveInterface::Execute_ReceiveOnLoadBegan(Object, Filter);
-	});
-
-	IterateSavers([&Filter](auto* Object)
-	{
-		check(Object->template Implements<USESaveInterface>());
-
-		// C++ event
-		if (ISESaveInterface* Interface = Cast<ISESaveInterface>(Object))
-		{
-			Interface->OnLoadBegan(Filter);
-		}
-		ISESaveInterface::Execute_ReceiveOnLoadBegan(Object, Filter);
+		ISESaveInterface::Execute_ReceiveOnLoadBegan(Object);
 	});
 }
 
-void USESaveManager::OnLoadFinished(const FSELevelFilter& Filter, const bool bError)
+void USESaveManager::OnLoadFinished(const bool bError)
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USaveManager::OnLoadFinished);
 
-	IterateSubscribedInterfaces([&Filter, bError](auto* Object)
+	IterateSubscribedInterfaces([bError](auto* Object)
 	{
 		check(Object->template Implements<USESaveInterface>());
 
 		// C++ event
 		if (ISESaveInterface* Interface = Cast<ISESaveInterface>(Object))
 		{
-			Interface->OnLoadFinished(Filter, bError);
+			Interface->OnLoadFinished(bError);
 		}
-		ISESaveInterface::Execute_ReceiveOnLoadFinished(Object, Filter, bError);
+		ISESaveInterface::Execute_ReceiveOnLoadFinished(Object, bError);
 	});
 
 	if (!bError)

@@ -7,20 +7,15 @@
 /////////////////////////////////////////////////////
 // FSlotDataActorsTask
 // Async task to serialize actors from a level.
-class FSETask : public FNonAbandonableTask {
+class FSEAsyncTask : public FNonAbandonableTask {
 protected:
 
 	/** Used only if Sync */
 	const UWorld* const World;
 	USESlotData* SlotData;
 
-	// Locally cached settings
-	const FSELevelFilter& Filter;
-
-
-	FSETask(const bool bIsloading, const UWorld* InWorld, USESlotData* InSlotData, const FSELevelFilter& Filter)
+	FSEAsyncTask(const bool bIsloading, const UWorld* InWorld, USESlotData* InSlotData)
 		: World(InWorld)
 		, SlotData(InSlotData)
-		, Filter(Filter)
 	{}
 };

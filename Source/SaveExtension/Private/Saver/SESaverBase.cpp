@@ -10,7 +10,6 @@
 USESaverBase::USESaverBase()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-	bWantsInitializeComponent = true;
 	//if (HasAnyFlags(RF_ClassDefaultObject) || IsTemplate())
 	//{
 	//	if (bUseGuid && SaveId.IsValid())
@@ -60,12 +59,12 @@ void USESaverBase::Serialize(FArchive& Ar)
 }
 
 
-void USESaverBase::OnSaveBegan(const FSELevelFilter& Filter)
+void USESaverBase::OnSaveBegan()
 {
 	// Saved.Broadcast();
 }
 
-void USESaverBase::OnLoadFinished(const FSELevelFilter& Filter, bool bError)
+void USESaverBase::OnLoadFinished(bool bError)
 {
 	// Resume.Broadcast();
 }
@@ -124,16 +123,6 @@ bool USESaverBase::SerializeData(TArray<uint8>& SerializedData)
 
 void USESaverBase::DeserializeData(const TArray<uint8>& SerializedData)
 {
-}
-
-void USESaverBase::InitializeComponent()
-{
-	Super::InitializeComponent();
-}
-
-void USESaverBase::UninitializeComponent()
-{
-	Super::UninitializeComponent();
 }
 
 

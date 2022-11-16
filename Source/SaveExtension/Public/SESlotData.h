@@ -45,13 +45,12 @@ public:
 	bool bStoreGameInstance = false;
 	FSEObjectRecord GameInstance;
 
-	FSELevelFilter GeneralLevelFilter;
 	FSEPersistentLevelRecord MainLevel;
 	TArray<FSEStreamingLevelRecord> SubLevels;
 
 	bool FindSaverRecord(const FName& Name, FSEObjectRecord*& Record);
 
-	TArray<FSEObjectRecord> SaverRecords;
+	TArray<FSEObjectRecord> SaverRecords; //DOTO 跨关卡也存在.
 
 	void CleanRecords(bool bKeepSublevels);
 

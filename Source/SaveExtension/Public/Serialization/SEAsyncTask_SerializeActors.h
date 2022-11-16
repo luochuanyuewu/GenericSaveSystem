@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "SETask_SerializeActors.h"
+#include "SEAsyncTask_SerializeActors.h"
 #include "GameFramework/Actor.h"
 #include "SESavePreset.h"
-#include "SETask.h"
+#include "SEAsyncTask.h"
 #include "Serialization/SERecords.h"
 #include "Serialization/SELevelRecords.h"
 
@@ -21,7 +21,7 @@ class USESlotData;
 /////////////////////////////////////////////////////
 // FSETask_SerializeActors
 // 序列化一个关卡中所有Actor的异步任务。
-class FSETask_SerializeActors : public FSETask
+class FSEAsyncTask_SerializeActors : public FSEAsyncTask
 {
 	const TArray<AActor*>* const LevelActors;
 	const int32 StartIndex;
@@ -36,10 +36,10 @@ class FSETask_SerializeActors : public FSETask
 
 
 public:
-	FSETask_SerializeActors(const UWorld* World, USESlotData* SlotData,
+	FSEAsyncTask_SerializeActors(const UWorld* World, USESlotData* SlotData,
 	                        const TArray<AActor*>* const InLevelActors, const int32 InStartIndex, const int32 InNum, bool bStoreGameInstance,
-	                        FSELevelRecord* InLevelRecord, const FSELevelFilter& Filter)
-		: FSETask(false, World, SlotData, Filter)
+	                        FSELevelRecord* InLevelRecord)
+		: FSEAsyncTask(false, World, SlotData)
 		  , LevelActors(InLevelActors)
 		  , StartIndex(InStartIndex)
 		  , Num(InNum)

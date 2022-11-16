@@ -25,63 +25,31 @@ struct FSELevelFilter
 
 public:
 
-	UPROPERTY(SaveGame)
-	FSEActorClassFilter ActorFilter;
-
-	UPROPERTY(SaveGame)
-	FSEActorClassFilter LoadActorFilter;
-
-	UPROPERTY(SaveGame)
-	bool bStoreComponents = false;
-
-	UPROPERTY(SaveGame)
-	FSEComponentClassFilter ComponentFilter;
-
-	UPROPERTY(SaveGame)
-	FSEComponentClassFilter LoadComponentFilter;
-
-
 	FSELevelFilter() {}
 
-	void FromPreset(const USESavePreset& Preset)
+
+	static bool ShouldSave(const AActor* Actor)
 	{
-		ActorFilter = Preset.GetActorFilter(true);
-		LoadActorFilter = Preset.GetActorFilter(false);
-		bStoreComponents = Preset.bStoreComponents;
-		ComponentFilter = Preset.GetComponentFilter(true);
-		LoadComponentFilter = Preset.GetComponentFilter(false);
+		return IsValid(Actor) && Actor->ActorHasTag(TagSerializable);
 	}
 
-	void BakeAllowedClasses() const
+	static bool ShouldLoad(const AActor* Actor)
 	{
-		TRACE_CPUPROFILER_EVENT_SCOPE(FSELevelFilter::BakeAllowedClasses);
-		ActorFilter.BakeAllowedClasses();
-		ComponentFilter.BakeAllowedClasses();
-		LoadActorFilter.BakeAllowedClasses();
-		LoadComponentFilter.BakeAllowedClasses();
+		return IsValid(Actor) && Actor->ActorHasTag(TagSerializable);
 	}
 
-	bool ShouldSave(const AActor* Actor) const
-	{
-		return ActorFilter.IsClassAllowed(Actor->GetClass());
-	}
-
-	bool ShouldLoad(const AActor* Actor) const
-	{
-		return LoadActorFilter.IsClassAllowed(Actor->GetClass());
-	}
-
-	bool ShouldSave(const UActorComponent* Component) const
+	static bool ShouldSave(const UActorComponent* Component)
 	{
 		return IsValid(Component)
-			&& ComponentFilter.IsClassAllowed(Component->GetClass());
+			&& Component->ComponentHasTag(TagSerializable);
 	}
 
-	bool ShouldLoad(const UActorComponent* Component) const
+	static bool ShouldLoad(const UActorComponent* Component)
 	{
 		return IsValid(Component)
-			&& LoadComponentFilter.IsClassAllowed(Component->GetClass());
+			&& Component->ComponentHasTag(TagSerializable);
 	}
+
 
 	static bool StoresTransform(const UActorComponent* Component)
 	{

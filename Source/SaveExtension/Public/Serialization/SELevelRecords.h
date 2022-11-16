@@ -16,9 +16,9 @@ struct FSELevelRecord : public FSEBaseRecord
 {
 	GENERATED_BODY()
 
-	bool bOverrideGeneralFilter = false;
+	// bool bOverrideGeneralFilter = false;
 	// Filter is used if bOverrideGeneralFilter is true
-	FSELevelFilter Filter;
+	// FSELevelFilter Filter;
 
 	/** Record of the Level Script Actor */
 	FSEActorRecord LevelScript;

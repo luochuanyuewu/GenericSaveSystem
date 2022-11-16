@@ -5,9 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "SESaveInterface.h"
-#include "SESaveManager.h"
-
 #include "SELifetimeComponent.generated.h"
+
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSELifetimeStartSignature);
@@ -17,7 +16,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSELifetimeSavedSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSELifetimeResumeSignature);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSELifetimeFinishSignature);
-
 
 
 /**
@@ -40,16 +38,14 @@ public:
 
 
 	// Event called when Save process starts
-	virtual void OnSaveBegan(const FSELevelFilter& Filter) override;
+	virtual void OnSaveBegan() override;
 
 	// Event called when Load process ends
-	virtual void OnLoadFinished(const FSELevelFilter& Filter, bool bError);
+	virtual void OnLoadFinished(bool bError);
 
 
-	USESaveManager* GetManager() const
-	{
-		return USESaveManager::Get(GetWorld());
-	}
+	USESaveManager* GetManager() const;
+
 
 
 	/***********************************************************************/

@@ -17,8 +17,6 @@ void USESlotDataTask_LevelLoader::OnStart()
 			return;
 		}
 
-		GetLevelFilter(*LevelRecord).BakeAllowedClasses();
-
 		if (Preset->IsFrameSplitLoad())
 		{
 			DeserializeLevelASync(StreamingLevel->GetLoadedLevel(), StreamingLevel);
@@ -42,15 +40,13 @@ void USESlotDataTask_LevelLoader::DeserializeASyncLoop(float StartMS /*= 0.0f*/)
 		StartMS = GetTimeMilliseconds();
 	}
 
-	const auto& Filter = GetLevelFilter(LevelRecord);
-
 	// Continue Iterating actors every tick
 	for (; CurrentActorIndex < CurrentLevelActors.Num(); ++CurrentActorIndex)
 	{
 		AActor* Actor{ CurrentLevelActors[CurrentActorIndex].Get() };
 		if (Actor)
 		{
-			DeserializeLevel_Actor(Actor, LevelRecord, Filter);
+			DeserializeLevel_Actor(Actor, LevelRecord);
 
 			const float CurrentMS = GetTimeMilliseconds();
 			// If x milliseconds passed, continue on next frame

@@ -1,7 +1,9 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "SELifetimeComponent.h"
-#include "Serialization/SETask.h"
+
+#include "SESaveManager.h"
+#include "Serialization/SEAsyncTask.h"
 
 
 USELifetimeComponent::USELifetimeComponent()
@@ -45,18 +47,23 @@ void USELifetimeComponent::EndPlay(EEndPlayReason::Type Reason)
 	Super::EndPlay(Reason);
 }
 
-void USELifetimeComponent::OnSaveBegan(const FSELevelFilter& Filter)
+void USELifetimeComponent::OnSaveBegan()
 {
-	if (Filter.ShouldSave(GetOwner()))
+	if (FSELevelFilter::ShouldSave(GetOwner()))
 	{
 		Saved.Broadcast();
 	}
 }
 
-void USELifetimeComponent::OnLoadFinished(const FSELevelFilter& Filter, bool bError)
+void USELifetimeComponent::OnLoadFinished(bool bError)
 {
-	if (Filter.ShouldSave(GetOwner()))
+	if (FSELevelFilter::ShouldSave(GetOwner()))
 	{
 		Resume.Broadcast();
 	}
+}
+
+USESaveManager* USELifetimeComponent::GetManager() const
+{
+	return USESaveManager::Get(GetWorld());
 }

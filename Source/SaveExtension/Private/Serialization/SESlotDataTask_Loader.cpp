@@ -1,13 +1,10 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
 #include "Serialization/SESlotDataTask_Loader.h"
-
 #include "GameFramework/Character.h"
 #include "Serialization/MemoryReader.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/PrimitiveComponent.h"
-#include "UObject/UObjectGlobals.h"
-
 #include "Misc/SESlotHelpers.h"
 #include "SESavePreset.h"
 #include "SESaveManager.h"
@@ -125,10 +122,7 @@ void USESlotDataTask_Loader::OnFinish(bool bSuccess)
 	// Execute delegates
 	Delegate.ExecuteIfBound((bSuccess) ? NewSlotInfo : nullptr);
 
-	GetManager()->OnLoadFinished(
-		SlotData ? GetGeneralFilter() : FSELevelFilter{},
-		!bSuccess
-	);
+	GetManager()->OnLoadFinished(!bSuccess);
 }
 
 void USESlotDataTask_Loader::BeginDestroy()
@@ -186,11 +180,9 @@ void USESlotDataTask_Loader::StartDeserialization()
 
 	NewSlotInfo->LoadDate = FDateTime::Now();
 
-	GetManager()->OnLoadBegan(GetGeneralFilter());
+	GetManager()->OnLoadBegan();
 	//Apply current Info if succeeded
 	GetManager()->__SetCurrentInfo(NewSlotInfo);
-
-	BakeAllFilters();
 
 	BeforeDeserialize();
 
@@ -277,14 +269,12 @@ void USESlotDataTask_Loader::DeserializeLevelSync(const ULevel* Level, const ULe
 
 	if (FSELevelRecord* LevelRecord = FindLevelRecord(StreamingLevel))
 	{
-		const auto& Filter = GetLevelFilter(*LevelRecord);
-
 		for (auto ActorItr = Level->Actors.CreateConstIterator(); ActorItr; ++ActorItr)
 		{
 			auto* Actor = *ActorItr;
-			if (IsValid(Actor) && Filter.ShouldSave(Actor))
+			if (IsValid(Actor) && FSELevelFilter::ShouldSave(Actor))
 			{
-				DeserializeLevel_Actor(Actor, *LevelRecord, Filter);
+				DeserializeLevel_Actor(Actor, *LevelRecord);
 			}
 		}
 	}
@@ -342,8 +332,6 @@ void USESlotDataTask_Loader::DeserializeASyncLoop(float StartMS)
 		return;
 	}
 
-	const auto& Filter = GetLevelFilter(*LevelRecord);
-
 	if (StartMS <= 0)
 	{
 		StartMS = GetTimeMilliseconds();
@@ -353,9 +341,9 @@ void USESlotDataTask_Loader::DeserializeASyncLoop(float StartMS)
 	for (; CurrentActorIndex < CurrentLevelActors.Num(); ++CurrentActorIndex)
 	{
 		AActor* const Actor{CurrentLevelActors[CurrentActorIndex].Get()};
-		if (IsValid(Actor) && Filter.ShouldSave(Actor))
+		if (IsValid(Actor) && FSELevelFilter::ShouldSave(Actor))
 		{
-			DeserializeLevel_Actor(Actor, *LevelRecord, Filter);
+			DeserializeLevel_Actor(Actor, *LevelRecord);
 
 			const float CurrentMS = GetTimeMilliseconds();
 			// If x milliseconds passed, stop and continue on next frame
@@ -387,8 +375,6 @@ void USESlotDataTask_Loader::PrepareLevel(const ULevel* Level, FSELevelRecord& L
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Loader::PrepareLevel);
 
-	const auto& Filter = GetLevelFilter(LevelRecord);
-
 	// 场景里没有，但是Records里有的Actor					=> 重新生成
 	// 场景里有，但是Records没有的Actor						=> 重新销毁
 	// 剩下的									     => 直接还原数据。
@@ -408,7 +394,7 @@ void USESlotDataTask_Loader::PrepareLevel(const ULevel* Level, FSELevelRecord& L
 			// Remove records which actors do exist
 			const bool bFoundActorRecord = Loader::RemoveSingleRecordPtrSwap(ActorsToSpawn, Actor, false) > 0;
 
-			if (Actor && Filter.ShouldSave(Actor))
+			if (Actor && FSELevelFilter::ShouldSave(Actor))
 			{
 				if (!bFoundActorRecord) // Don't destroy level actors
 				{
@@ -480,7 +466,7 @@ void USESlotDataTask_Loader::RespawnActors(const TArray<FSEActorRecord*>& Record
 	}
 }
 
-void USESlotDataTask_Loader::DeserializeLevel_Actor(AActor* const Actor, const FSELevelRecord& LevelRecord, const FSELevelFilter& Filter)
+void USESlotDataTask_Loader::DeserializeLevel_Actor(AActor* const Actor, const FSELevelRecord& LevelRecord)
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Loader::DeserializeLevel_Actor);
 
@@ -488,7 +474,7 @@ void USESlotDataTask_Loader::DeserializeLevel_Actor(AActor* const Actor, const F
 	const FSEActorRecord* const Record = LevelRecord.Actors.FindByKey(Actor);
 	if (Record && Record->IsValid() && Record->Class == Actor->GetClass())
 	{
-		DeserializeActor(Actor, *Record, Filter);
+		DeserializeActor(Actor, *Record);
 	}
 }
 
@@ -512,7 +498,7 @@ void USESlotDataTask_Loader::DeserializeGameInstance()
 	SELog(Preset, "Game Instance '" + Record.Name.ToString() + "'", FColor::Green, !bSuccess, 1);
 }
 
-bool USESlotDataTask_Loader::DeserializeActor(AActor* Actor, const FSEActorRecord& Record, const FSELevelFilter& Filter)
+bool USESlotDataTask_Loader::DeserializeActor(AActor* Actor, const FSEActorRecord& Record)
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(USlotDataTask_Loader::DeserializeActor);
 
@@ -541,7 +527,7 @@ bool USESlotDataTask_Loader::DeserializeActor(AActor* Actor, const FSEActorRecor
 
 	Actor->SetActorHiddenInGame(Record.bHiddenInGame);
 
-	DeserializeActorComponents(Actor, Record, Filter, 2);
+	DeserializeActorComponents(Actor, Record, 2);
 
 	{
 		//Serialize from Record Data
@@ -553,48 +539,45 @@ bool USESlotDataTask_Loader::DeserializeActor(AActor* Actor, const FSEActorRecor
 	return true;
 }
 
-void USESlotDataTask_Loader::DeserializeActorComponents(AActor* Actor, const FSEActorRecord& ActorRecord, const FSELevelFilter& Filter, int8 Indent)
+void USESlotDataTask_Loader::DeserializeActorComponents(AActor* Actor, const FSEActorRecord& ActorRecord, int8 Indent)
 {
-	if (Filter.bStoreComponents)
+	TRACE_CPUPROFILER_EVENT_SCOPE(UUSlotDataTask_Loader::DeserializeActorComponents);
+
+	const TSet<UActorComponent*>& Components = Actor->GetComponents();
+	for (auto* Component : Components)
 	{
-		TRACE_CPUPROFILER_EVENT_SCOPE(UUSlotDataTask_Loader::DeserializeActorComponents);
-
-		const TSet<UActorComponent*>& Components = Actor->GetComponents();
-		for (auto* Component : Components)
+		if (!FSELevelFilter::ShouldSave(Component))
 		{
-			if (!Filter.ShouldSave(Component))
-			{
-				continue;
-			}
+			continue;
+		}
 
-			// Find the record
-			const FSEComponentRecord* Record = ActorRecord.ComponentRecords.FindByKey(Component);
-			if (!Record)
-			{
-				SELog(Preset, "Component '" + Component->GetFName().ToString() + "' - Record not found", FColor::Red, false, Indent + 1);
-				continue;
-			}
+		// Find the record
+		const FSEComponentRecord* Record = ActorRecord.ComponentRecords.FindByKey(Component);
+		if (!Record)
+		{
+			SELog(Preset, "Component '" + Component->GetFName().ToString() + "' - Record not found", FColor::Red, false, Indent + 1);
+			continue;
+		}
 
-			if (FSELevelFilter::StoresTransform(Component))
+		if (FSELevelFilter::StoresTransform(Component))
+		{
+			USceneComponent* Scene = CastChecked<USceneComponent>(Component);
+			if (Scene->Mobility == EComponentMobility::Movable)
 			{
-				USceneComponent* Scene = CastChecked<USceneComponent>(Component);
-				if (Scene->Mobility == EComponentMobility::Movable)
-				{
-					Scene->SetRelativeTransform(Record->Transform);
-				}
+				Scene->SetRelativeTransform(Record->Transform);
 			}
+		}
 
-			if (FSELevelFilter::StoresTags(Component))
-			{
-				Component->ComponentTags = Record->Tags;
-			}
+		if (FSELevelFilter::StoresTags(Component))
+		{
+			Component->ComponentTags = Record->Tags;
+		}
 
-			if (!Component->GetClass()->IsChildOf<UPrimitiveComponent>())
-			{
-				FMemoryReader MemoryReader(Record->Data, true);
-				FSEArchive Archive(MemoryReader, false);
-				Component->Serialize(Archive);
-			}
+		if (!Component->GetClass()->IsChildOf<UPrimitiveComponent>())
+		{
+			FMemoryReader MemoryReader(Record->Data, true);
+			FSEArchive Archive(MemoryReader, false);
+			Component->Serialize(Archive);
 		}
 	}
 }

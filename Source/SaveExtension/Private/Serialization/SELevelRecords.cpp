@@ -14,12 +14,12 @@ bool FSELevelRecord::Serialize(FArchive& Ar)
 {
 	Super::Serialize(Ar);
 
-	Ar << bOverrideGeneralFilter;
-	if (bOverrideGeneralFilter)
-	{
-		static UScriptStruct* const LevelFilterType{ FSELevelFilter::StaticStruct() };
-		LevelFilterType->SerializeItem(Ar, &Filter, nullptr);
-	}
+	// Ar << bOverrideGeneralFilter;
+	// if (bOverrideGeneralFilter)
+	// {
+	// 	static UScriptStruct* const LevelFilterType{ FSELevelFilter::StaticStruct() };
+	// 	LevelFilterType->SerializeItem(Ar, &Filter, nullptr);
+	// }
 
 	Ar << LevelScript;
 	Ar << Actors;

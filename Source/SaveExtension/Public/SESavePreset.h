@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Misc/SEClassFilter.h"
 #include "SESavePreset.generated.h"
 
 
@@ -92,30 +91,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Serialization)
 	bool bStoreGameInstance = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Serialization|Actors")
-	FSEActorClassFilter ActorFilter;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Serialization|Actors", meta = (PinHiddenByDefault, InlineEditConditionToggle))
-	bool bUseLoadActorFilter = false;
-
-	/** If enabled, this filter will be used while loading instead of "ActorFilter" */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Serialization|Actors", meta = (EditCondition="bUseLoadActorFilter"))
-	FSEActorClassFilter LoadActorFilter;
-
-	/** If true will store ActorComponents depending on the filters */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Serialization|Components")
-	bool bStoreComponents = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Serialization|Components")
-	FSEComponentClassFilter ComponentFilter;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Serialization|Components", meta = (PinHiddenByDefault, InlineEditConditionToggle))
-	bool bUseLoadComponentFilter = false;
-
-	/** If enabled, this filter will be used while loading instead of "ComponentFilter" */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Serialization|Components", meta = (EditCondition = "bUseLoadComponentFilter"))
-	FSEComponentClassFilter LoadComponentFilter;
-
 public:
 	/** Serialization will be multi-threaded between all available cores. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asynchronous")
@@ -165,28 +140,6 @@ public:
 
 	bool IsValidId(int32 Id) const;
 
-	UFUNCTION(BlueprintPure, Category = SavePreset)
-	FSEActorClassFilter& GetActorFilter(bool bIsLoading)
-	{
-		return (bIsLoading && bUseLoadActorFilter) ? LoadActorFilter : ActorFilter;
-	}
-
-	const FSEActorClassFilter& GetActorFilter(bool bIsLoading) const
-	{
-		return (bIsLoading && bUseLoadActorFilter) ? LoadActorFilter : ActorFilter;
-	}
-
-	UFUNCTION(BlueprintPure, Category = SavePreset)
-	FSEComponentClassFilter& GetComponentFilter(bool bIsLoading)
-	{
-		return (bIsLoading && bUseLoadComponentFilter) ? LoadComponentFilter : ComponentFilter;
-	}
-
-	const FSEComponentClassFilter& GetComponentFilter(bool bIsLoading) const
-	{
-		return (bIsLoading && bUseLoadActorFilter) ? LoadComponentFilter : ComponentFilter;
-	}
-
 	bool IsMTSerializationLoad() const
 	{
 		return MultithreadedSerialization == ESaveASyncMode::LoadAsync || MultithreadedSerialization == ESaveASyncMode::SaveAndLoadAsync;
@@ -219,8 +172,6 @@ public:
 	{
 		return MultithreadedFiles == ESaveASyncMode::SaveAsync || MultithreadedFiles == ESaveASyncMode::SaveAndLoadAsync;
 	}
-
-	struct FSELevelFilter ToFilter() const;
 };
 
 

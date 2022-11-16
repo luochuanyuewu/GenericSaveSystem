@@ -26,8 +26,6 @@ void USESlotData::Serialize(FArchive& Ar)
 	Ar << bStoreGameInstance;
 	Ar << GameInstance;
 
-	static UScriptStruct* const LevelFilterType{FSELevelFilter::StaticStruct()};
-	LevelFilterType->SerializeItem(Ar, &GeneralLevelFilter, nullptr);
 	MainLevel.Serialize(Ar);
 	Ar << SubLevels;
 	Ar << SaverRecords;

@@ -27,9 +27,3 @@ void USESavePreset::GetSlotNameFromId(int32 Id, FName& Name) const
 	}
 }
 
-FSELevelFilter USESavePreset::ToFilter() const
-{
-	FSELevelFilter Filter{};
-	Filter.FromPreset(*this);
-	return Filter;
-}

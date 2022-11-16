@@ -95,14 +95,14 @@ void USESaveManager::OrderSaversByPriority(bool SavePriority)
 	{
 		Savers.Sort([](const USESaverBase& A, const USESaverBase& B)
 		{
-			return A.SavePriority > B.SavePriority;
+			return A.GetSavePriority() > B.GetSavePriority();
 		});
 	}
 	else
 	{
 		Savers.Sort([](const USESaverBase& A, const USESaverBase& B)
 		{
-			return A.LoadPriority > B.LoadPriority;
+			return A.GetLoadPriority() > B.GetLoadPriority();
 		});
 	}
 }

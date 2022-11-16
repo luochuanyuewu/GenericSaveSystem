@@ -403,10 +403,10 @@ public:
 	UFUNCTION(Category = SaveExtension, BlueprintCallable)
 	void UnsubscribeFromEvents(const TScriptInterface<ISESaveInterface>& Interface);
 
-	void OnSaveBegan(const FSELevelFilter& Filter);
-	void OnSaveFinished(const FSELevelFilter& Filter, const bool bError);
-	void OnLoadBegan(const FSELevelFilter& Filter);
-	void OnLoadFinished(const FSELevelFilter& Filter, const bool bError);
+	void OnSaveBegan();
+	void OnSaveFinished(const bool bError);
+	void OnLoadBegan();
+	void OnLoadFinished(const bool bError);
 
 private:
 	void OnMapLoadStarted(const FString& MapName);

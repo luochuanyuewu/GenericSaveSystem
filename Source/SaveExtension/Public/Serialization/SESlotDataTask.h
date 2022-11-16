@@ -74,11 +74,6 @@ protected:
 
 	USESaveManager* GetManager() const;
 
-	void BakeAllFilters();
-
-	const FSELevelFilter& GetGeneralFilter() const;
-	const FSELevelFilter& GetLevelFilter(const FSELevelRecord& Level) const;
-
 	FSELevelRecord* FindLevelRecord(const ULevelStreaming* Level) const;
 
 	//~ Begin UObject Interface

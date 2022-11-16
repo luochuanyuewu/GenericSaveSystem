@@ -42,7 +42,7 @@ void USESlotDataTask_Saver::OnStart()
 	{
 		const UWorld* World = GetWorld();
 
-		GetManager()->OnSaveBegan(GetGeneralFilter());
+		GetManager()->OnSaveBegan();
 
 		SlotInfo = Manager->GetCurrentInfo();
 		SlotData = Manager->GetCurrentData();
@@ -92,7 +92,6 @@ void USESlotDataTask_Saver::OnStart()
 		SlotData->Map = SlotData->Map;
 
 		SlotData->bStoreGameInstance = Preset->bStoreGameInstance;
-		SlotData->GeneralLevelFilter = Preset->ToFilter();
 
 		SerializeWorld();
 		GetManager()->SaveAllSavers();
@@ -138,7 +137,7 @@ void USESlotDataTask_Saver::OnFinish(bool bSuccess)
 	USESaveManager* Manager = GetManager();
 	check(Manager);
 	Delegate.ExecuteIfBound((Manager && bSuccess) ? Manager->GetCurrentInfo() : nullptr);
-	Manager->OnSaveFinished(SlotData ? GetGeneralFilter() : FSELevelFilter{}, !bSuccess);
+	Manager->OnSaveFinished(!bSuccess);
 }
 
 void USESlotDataTask_Saver::BeginDestroy()
@@ -187,8 +186,6 @@ void USESlotDataTask_Saver::SerializeWorld()
 
 void USESlotDataTask_Saver::PrepareAllLevels(const TArray<ULevelStreaming*>& Levels)
 {
-	BakeAllFilters();
-
 	// Create the sub-level records if non existent
 	for (const ULevelStreaming* Level : Levels)
 	{
@@ -224,8 +221,6 @@ void USESlotDataTask_Saver::ScheduleTasksForLevel(const ULevel* Level, int32 Ass
 	// Empty level record before serializing it
 	LevelRecord->CleanRecords();
 
-	auto& Filter = GetLevelFilter(*LevelRecord);
-
 	const int32 MinObjectsPerTask = 40;
 	const int32 ActorCount = Level->Actors.Num();
 	const int32 NumBalancedPerTask = FMath::CeilToInt((float)ActorCount / AssignedTasks);
@@ -244,10 +239,10 @@ void USESlotDataTask_Saver::ScheduleTasksForLevel(const ULevel* Level, int32 Ass
 		// 第一个Task是否保存GameInstance.
 		bool bStoreGameInstance = Index <= 0 && SlotData->bStoreGameInstance;
 		// 添加新的异步任务,只是添加了，但是还没开始。
-		Tasks.Emplace(FSETask_SerializeActors
+		Tasks.Emplace(FSEAsyncTask_SerializeActors
 			{
 				GetWorld(), SlotData, &Level->Actors, Index, NumToSerialize,
-				bStoreGameInstance, LevelRecord, Filter
+				bStoreGameInstance, LevelRecord
 			});
 
 		Index += NumToSerialize;
@@ -271,12 +266,12 @@ void USESlotDataTask_Saver::RunScheduledTasks()
 		Tasks[0].StartSynchronousTask();
 	}
 	// 一直等待直到所有的Task完成。
-	for (FAsyncTask<FSETask_SerializeActors>& AsyncTask : Tasks)
+	for (FAsyncTask<FSEAsyncTask_SerializeActors>& AsyncTask : Tasks)
 	{
 		AsyncTask.EnsureCompletion();
 	}
 	// 所有Task完成后，同步数据。
-	for (FAsyncTask<FSETask_SerializeActors>& AsyncTask : Tasks)
+	for (FAsyncTask<FSEAsyncTask_SerializeActors>& AsyncTask : Tasks)
 	{
 		AsyncTask.GetTask().DumpData();
 	}

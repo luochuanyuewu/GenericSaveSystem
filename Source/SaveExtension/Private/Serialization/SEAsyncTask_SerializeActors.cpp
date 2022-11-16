@@ -1,6 +1,6 @@
 // Copyright 2015-2020 Piperift. All Rights Reserved.
 
-#include "Serialization/SETask_SerializeActors.h"
+#include "Serialization/SEAsyncTask_SerializeActors.h"
 #include "Serialization/MemoryWriter.h"
 #include "Components/PrimitiveComponent.h"
 #include "SESaveManager.h"
@@ -11,7 +11,7 @@
 
 /////////////////////////////////////////////////////
 // FMTTask_SerializeActors
-void FSETask_SerializeActors::DoWork()
+void FSEAsyncTask_SerializeActors::DoWork()
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(FSETask_SerializeActors::DoWork);
 	if (bStoreGameInstance)
@@ -22,7 +22,7 @@ void FSETask_SerializeActors::DoWork()
 	for (int32 I = 0; I < Num; ++I)
 	{
 		const AActor* const Actor = (*LevelActors)[StartIndex + I];
-		if (Actor && Filter.ShouldSave(Actor))
+		if (Actor && FSELevelFilter::ShouldSave(Actor))
 		{
 			FSEActorRecord& Record = ActorRecords.AddDefaulted_GetRef();
 			SerializeActor(Actor, Record);
@@ -30,7 +30,7 @@ void FSETask_SerializeActors::DoWork()
 	}
 }
 
-void FSETask_SerializeActors::SerializeGameInstance()
+void FSEAsyncTask_SerializeActors::SerializeGameInstance()
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(FMTTask_SerializeActors::SerializeGameInstance);
 	if (UGameInstance* GameInstance = World->GetGameInstance())
@@ -46,7 +46,7 @@ void FSETask_SerializeActors::SerializeGameInstance()
 	}
 }
 
-bool FSETask_SerializeActors::SerializeActor(const AActor* Actor, FSEActorRecord& Record) const
+bool FSEAsyncTask_SerializeActors::SerializeActor(const AActor* Actor, FSEActorRecord& Record) const
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(FMTTask_SerializeActors::SerializeActor);
 
@@ -54,9 +54,9 @@ bool FSETask_SerializeActors::SerializeActor(const AActor* Actor, FSEActorRecord
 	Record = { Actor };
 
 	Record.bHiddenInGame = Actor->IsHidden();
-	Record.bIsProcedural = Filter.IsProcedural(Actor);
+	Record.bIsProcedural = FSELevelFilter::IsProcedural(Actor);
 
-	if (Filter.StoresTags(Actor))
+	if (FSELevelFilter::StoresTags(Actor))
 	{
 		Record.Tags = Actor->Tags;
 	}
@@ -65,18 +65,18 @@ bool FSETask_SerializeActors::SerializeActor(const AActor* Actor, FSEActorRecord
 		// Only save save-tags
 		for (const auto& Tag : Actor->Tags)
 		{
-			if (Filter.IsSaveTag(Tag))
+			if (FSELevelFilter::IsSaveTag(Tag))
 			{
 				Record.Tags.Add(Tag);
 			}
 		}
 	}
 
-	if (Filter.StoresTransform(Actor))
+	if (FSELevelFilter::StoresTransform(Actor))
 	{
 		Record.Transform = Actor->GetTransform();
 
-		if (Filter.StoresPhysics(Actor))
+		if (FSELevelFilter::StoresPhysics(Actor))
 		{
 			USceneComponent* const Root = Actor->GetRootComponent();
 			if (Root && Root->Mobility == EComponentMobility::Movable)
@@ -94,10 +94,7 @@ bool FSETask_SerializeActors::SerializeActor(const AActor* Actor, FSEActorRecord
 		}
 	}
 
-	if (Filter.bStoreComponents)
-	{
-		SerializeActorComponents(Actor, Record, 1);
-	}
+	SerializeActorComponents(Actor, Record, 1);
 
 	TRACE_CPUPROFILER_EVENT_SCOPE(Serialize);
 	FMemoryWriter MemoryWriter(Record.Data, true);
@@ -107,7 +104,7 @@ bool FSETask_SerializeActors::SerializeActor(const AActor* Actor, FSEActorRecord
 	return true;
 }
 
-void FSETask_SerializeActors::SerializeActorComponents(const AActor* Actor, FSEActorRecord& ActorRecord, int8 Indent /*= 0*/) const
+void FSEAsyncTask_SerializeActors::SerializeActorComponents(const AActor* Actor, FSEActorRecord& ActorRecord, int8 Indent /*= 0*/) const
 {
 	TRACE_CPUPROFILER_EVENT_SCOPE(FMTTask_SerializeActors::SerializeActorComponents);
 
@@ -115,13 +112,13 @@ void FSETask_SerializeActors::SerializeActorComponents(const AActor* Actor, FSEA
 	for (auto* Component : Components)
 	{
 		TRACE_CPUPROFILER_EVENT_SCOPE(FMTTask_SerializeActors::SerializeActorComponents|Component);
-		if (Filter.ShouldSave(Component))
+		if (FSELevelFilter::ShouldSave(Component))
 		{
 			FSEComponentRecord ComponentRecord;
 			ComponentRecord.Name = Component->GetFName();
 			ComponentRecord.Class = Component->GetClass();
 
-			if (Filter.StoresTransform(Component))
+			if (FSELevelFilter::StoresTransform(Component))
 			{
 				const USceneComponent* Scene = CastChecked<USceneComponent>(Component);
 				if (Scene->Mobility == EComponentMobility::Movable)
@@ -130,7 +127,7 @@ void FSETask_SerializeActors::SerializeActorComponents(const AActor* Actor, FSEA
 				}
 			}
 
-			if (Filter.StoresTags(Component))
+			if (FSELevelFilter::StoresTags(Component))
 			{
 				ComponentRecord.Tags = Component->ComponentTags;
 			}

@@ -4,7 +4,7 @@
 
 #include "Delegates.h"
 #include "ISaveExtension.h"
-#include "SETask_SerializeActors.h"
+#include "SEAsyncTask_SerializeActors.h"
 #include "Multithreading/SETask_SaveFile.h"
 #include "SESavePreset.h"
 #include "SESlotData.h"
@@ -41,7 +41,7 @@ protected:
 	USESlotInfo* SlotInfo;
 
 	/** Begin AsyncTasks */
-	TArray<FAsyncTask<FSETask_SerializeActors>> Tasks;
+	TArray<FAsyncTask<FSEAsyncTask_SerializeActors>> Tasks;
 	FAsyncTask<FSETask_SaveFile>* SaveTask;
 	/** End AsyncTasks */
 
