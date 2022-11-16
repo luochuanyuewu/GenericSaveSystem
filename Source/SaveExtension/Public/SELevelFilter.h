@@ -20,6 +20,7 @@ struct FSELevelFilter
 	static const FName TagNoTransform;
 	static const FName TagNoPhysics;
 	static const FName TagNoTags;
+	static const FName TagSerializable;
 	static const FName TagTransform;
 
 public:
@@ -95,7 +96,7 @@ public:
 
 	static bool IsSaveTag(const FName& Tag)
 	{
-		return Tag == TagNoTransform || Tag == TagNoPhysics || Tag == TagNoTags;
+		return Tag == TagNoTransform || Tag == TagNoPhysics || Tag == TagNoTags || Tag == TagSerializable;
 	}
 
 	static FORCEINLINE bool StoresTransform(const AActor* Actor) { return Actor->IsRootComponentMovable() && !HasTag(Actor, TagNoTransform); }

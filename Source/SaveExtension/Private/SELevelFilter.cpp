@@ -9,4 +9,5 @@
 const FName FSELevelFilter::TagNoTransform { "!SaveTransform"  };
 const FName FSELevelFilter::TagNoPhysics   { "!SavePhysics"    };
 const FName FSELevelFilter::TagNoTags      { "!SaveTags"       };
+const FName FSELevelFilter::TagSerializable      { "Serializable"       };
 const FName FSELevelFilter::TagTransform   { "SaveTransform"   };

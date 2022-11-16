@@ -15,7 +15,10 @@ class SAVEEXTENSION_API USESaveSettings : public UDeveloperSettings
 {
     GENERATED_BODY()
 
-protected:
+public:
+	
+	static const USESaveSettings* Get();
+
 
     UPROPERTY(EditAnywhere, Category = "Save Extension", Config, meta = (DisplayName = "Preset"))
 	TSubclassOf<USESavePreset> Preset;
@@ -26,8 +29,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Save Extension", Config)
 	FString GuidPropertyName = "SaveGuid";
 
-
-public:
+	/**
+	 * @brief actor/component with this tag will be serializable.
+	 */
+	UPROPERTY(EditAnywhere, Category= "Save Extension")
+	FName SerializableTag = "Serializable";
 
     // If true SaveManager will tick with the world. If game is paused, saving process may be interrupted.
     UPROPERTY(EditAnywhere, Category = "Save Extension", Config)
@@ -38,11 +44,3 @@ public:
 };
 
 
-inline USESavePreset* USESaveSettings::CreatePreset(UObject* Outer) const
-{
-    if(UClass* PresetClass = Preset.Get())
-	{
-        return NewObject<USESavePreset>(Outer, PresetClass);
-	}
-    return NewObject<USESavePreset>(Outer);
-}
