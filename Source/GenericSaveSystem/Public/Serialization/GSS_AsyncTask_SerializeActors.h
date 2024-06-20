@@ -23,7 +23,7 @@ class UGSS_SlotData;
 // 序列化一个关卡中所有Actor的异步任务。
 class FGSS_AsyncTask_SerializeActors : public FGSS_AsyncTask
 {
-	const TArray<AActor*>* const LevelActors;
+	const TArray<TObjectPtr<AActor>>* const LevelActors;
 	const int32 StartIndex;
 	const int32 Num;
 	const bool bStoreGameInstance = false;
@@ -36,7 +36,7 @@ class FGSS_AsyncTask_SerializeActors : public FGSS_AsyncTask
 
 public:
 	FGSS_AsyncTask_SerializeActors(const UWorld* World, UGSS_SlotData* SlotData,
-	                             const TArray<AActor*>* const InLevelActors, const int32 InStartIndex, const int32 InNum, bool bStoreGameInstance,
+	                             const TArray<TObjectPtr<AActor>>* const InLevelActors, const int32 InStartIndex, const int32 InNum, bool bStoreGameInstance,
 	                             FGSS_LevelRecord* InLevelRecord)
 		: FGSS_AsyncTask(false, World, SlotData)
 		  , LevelActors(InLevelActors)

@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "GSS_Records.generated.h"
 
+class UGSS_SaverBase;
 class UGSS_SlotData;
 
 

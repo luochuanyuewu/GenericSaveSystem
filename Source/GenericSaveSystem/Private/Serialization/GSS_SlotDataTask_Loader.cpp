@@ -271,7 +271,7 @@ void UGSS_SlotDataTask_Loader::DeserializeLevelSync(const ULevel* Level, const U
 	{
 		for (auto ActorItr = Level->Actors.CreateConstIterator(); ActorItr; ++ActorItr)
 		{
-			auto* Actor = *ActorItr;
+			TObjectPtr<AActor> Actor = *ActorItr;
 			if (IsValid(Actor) && UGSS_SaveFilter::ShouldSave(Actor))
 			{
 				DeserializeLevel_Actor(Actor, *LevelRecord);
@@ -313,7 +313,7 @@ void UGSS_SlotDataTask_Loader::DeserializeLevelASync(ULevel* Level, ULevelStream
 
 	// Copy actors array. New actors won't be considered for deserialization
 	CurrentLevelActors.Empty(Level->Actors.Num());
-	for (auto* Actor : Level->Actors)
+	for (TObjectPtr<AActor> Actor : Level->Actors)
 	{
 		if (IsValid(Actor))
 		{
